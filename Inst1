@@ -21,6 +21,8 @@ lsblk
 echo -n "Enter Disk Name: /dev/"
 read harddisk
 
+: ${randovar:?"Were Checks Completed: "}
+
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
 
