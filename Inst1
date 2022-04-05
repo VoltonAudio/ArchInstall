@@ -14,8 +14,7 @@ ping -c 2 archlinux.org
 timedatectl set-ntp true
 
 #ask user if checks completed
-echo -n "Were Checks Completed: "
-read randovar
+: ${randovar:?"Were Checks Completed: "}
 
 #select hard disk
 lsblk
