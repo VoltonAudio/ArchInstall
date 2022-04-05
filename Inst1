@@ -1,0 +1,189 @@
+#! /bin/bash
+
+#verify EUFI mode
+ls /sys/firmware/efi/efivars
+
+#set keyboard layout
+loadkeys uk
+
+#test network
+ip link
+ping -c 2 archlinux.org
+
+#update system clock
+timedatectl set-ntp true
+
+#ask user if checks completed
+echo -n "Were Checks Completed: "
+read randovar
+
+#select hard disk
+lsblk
+echo -n "Enter Disk Name: /dev/"
+read harddisk
+
+#wipe disk "$harddisk"
+sgdisk --zap-all /dev/"$harddisk"
+
+#partition boot, root and home
+sgdisk -n 0:0:+1024MiB /dev/"$harddisk"
+sgdisk -c 1:boot /dev/"$harddisk"
+sgdisk -t 1:ef00 /dev/"$harddisk"
+
+sgdisk -n 0:0:+102MiB /dev/"$harddisk"
+sgdisk -c 2:root /dev/"$harddisk"
+sgdisk -t 2:8300 /dev/"$harddisk"
+
+sgdisk -n 0:0:0 /dev/"$harddisk"
+sgdisk -c 3:home /dev/"$harddisk"
+sgdisk -t 3:8300 /dev/"$harddisk"
+
+#format partitions to correct file system
+mkfs.fat -F32 /dev/"$harddisk"1
+mkfs.ext4 /dev/"$harddisk"2
+mkfs.ext4 /dev/"$harddisk"3
+
+#mount partitions
+mount /dev/"$harddisk"2 /mnt
+mkdir /mnt/boot
+mkdir /mnt/home
+mount /dev/"$harddisk"1 /mnt/boot
+mount /dev/"$harddisk"3 /mnt/home
+
+#rank mirrorlist
+cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
+pacman -Syu
+pacman -S pacman-contrib
+rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+
+#install linux + packages to mount drive
+echo "linux
+linux-lts
+linux-hardened
+linux-zen"
+echo -n "Select A Kernel: "
+read kernel
+
+pacstrap /mnt base base-devel "$kernel" "$kernel"-headers linux-firmware sudo nano
+
+#generate fstab
+genfstab -U /mnt >> /mnt/etc/fstab
+
+#change root to mounted drive
+arch-chroot /mnt
+
+#set timezone
+ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
+
+#set hwclock
+hwclock --systohc
+
+#edit locale.gen
+echo en_IE.UTF-8 UTF-8 >> /etc/locale.gen
+
+#generate locale.conf
+locale-gen
+
+#edit locale.conf
+echo LANG=en_IE.UTF-8 >> /etc/locale.conf
+
+#set keyboard layout
+echo KEYMAP=uk >> /etc/vconsole.conf
+
+#set hostname
+echo -n "Hostname: "
+read hostname
+echo $hostname >> /etc/hostname
+
+#enable multilib for 32bit apps
+echo "[multilib]
+Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+pacman -Syu
+
+#enable SSD trim support
+systemctl enable fstrim.timer
+
+#setup dhcpcd + network manager
+pacman -S dhcpcd networkmanager
+systemctl enable dhcpcd@enp3s0.service
+systemctl enable NetworkManager.service
+
+#set password
+rootpass1=1
+rootpass2=2
+
+while [ $rootpass1 != $rootpass2 ]
+do
+echo -n "Set Root Password: "
+read -s rootpass1
+
+echo \
+
+echo -n "Confirm Password: "
+read -s rootpass2
+
+echo \
+
+if [ "$rootpass1" == "$rootpass2" ]
+then
+printf "Passwords Match"
+echo -en "$rootpass\n$rootpassw" | passwd
+echo \
+
+else
+printf "Passwords Don't Match"
+echo \
+
+printf "Please Try Again"
+echo \
+
+fi
+done
+
+#edit sudo
+echo %wheel ALL=(ALL:ALL) ALL >> /etc/sudoers.tmp
+
+#add account
+echo -n "Enter Username: "
+read username
+useradd -m -g users -G wheel,storage -s /bin/bash $username
+echo -en "$rootpass\n$rootpassw" | passwd $username
+
+#install bootloader
+bootctl install
+
+#edit loader.conf
+echo "default $hostname
+timeout 3
+console-mode max
+editor no" >> /boot/loader/loader.conf
+
+#edit arch.conf
+echo "title $hostname
+linux /vmlinuz-$kernel
+initrd /amd-ucode.img
+initrd /initramfs-$kernel.img" >> /boot/loader/entries/"$hostname".conf
+
+#add PARTUUID to arch.conf
+echo -n "options root=PARTUUID=" >> /boot/loader/entries/"$hostname".conf
+hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"1)
+echo -n $hddid >> /boot/loader/entries/"$hostname".conf
+echo " rw" >> /boot/loader/entries/"$hostname".conf
+
+#install cpu microcode
+pacman -S amd-ucode
+
+#install amd gpu drivers
+sudo pacman -S mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
+
+#install audio system
+pacman -S jack2 lib32-jack2 jack_mixer cadence
+
+#final update
+pacman -Syu
+
+#exit chroot
+exit
+
+#reboot system
+reboot
