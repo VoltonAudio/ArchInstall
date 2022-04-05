@@ -1,0 +1,35 @@
+#! /bin/bash
+
+#check for install errors
+systemctl --failed
+
+#ask user if checks completed
+echo -n "Were Checks Completed: "
+read randovar
+
+#install firewall
+pacman -S nftables
+systemctl enable nftables.service
+systemctl start nftables.service
+pacman -S firewalld
+systemctl enable firewalld.service
+systemctl start firewalld.service
+
+#install Xorg
+pacman -S xorg-server xorg-xinit
+
+#install sddm
+pacman -S sddm
+systemctl enable sddm.service
+
+#install Plasma
+pacman -S plasma-desktop
+pacman -S dolphin konsole kgpg kcalc kate partitionmanager ksystemlog gwenview spectacle git gnupg ntfs-3g
+
+#install additional packages
+echo "Type Additional Packages Seperated By A Space"
+read packages
+pacman -S $packages
+
+#reboot
+reboot
