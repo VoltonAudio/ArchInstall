@@ -12,6 +12,7 @@ clear
 echo $randovar
 
 #select hard disk
+harddisk=
 lsblk
 if [ "$harddisk" == "" ]; then
   echo "Enter Disk Name: /dev/"
