@@ -1,13 +1,14 @@
 #! /bin/bash
 
+set -uo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+
 #check for install errors
 systemctl --failed
 
 #ask user if checks completed
 echo -n "Were Checks Completed: "
-stty echo
 read randovar
-stty echo
 
 #install firewall
 pacman -S --noconfirm nftables
@@ -30,9 +31,7 @@ pacman -S --noconfirm dolphin konsole kgpg kcalc kate partitionmanager ksystemlo
 
 #install additional packages
 echo "Type Additional Packages Seperated By A Space"
-stty echo
 read addpackages
-stty echo
 if [ -z "$addpackages" ]
 then
       echo "No Additional Packages"
