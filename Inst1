@@ -203,4 +203,4 @@ EOF
 arch-chroot /mnt /root/part2.sh
 
 #reboot system
-reboot
+#reboot
