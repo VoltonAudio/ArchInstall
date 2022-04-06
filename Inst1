@@ -1,17 +1,7 @@
 #! /bin/bash
 
-#verify EUFI mode
-ls /sys/firmware/efi/efivars
+set -uo pipefail
 
-#set keyboard layout
-loadkeys uk
-
-#test network
-ip link
-ping -c 2 archlinux.org
-
-#update system clock
-timedatectl set-ntp true
 
 #ask user if checks completed
 echo -n "Were Checks Completed: "
@@ -35,5 +25,5 @@ else
 fi
 
 hostname=$(dialog --stdout --inputbox "Enter hostname" 0 0) || exit 1
+clear
 : ${hostname:?"hostname cannot be empty"}
-echo $hostname
