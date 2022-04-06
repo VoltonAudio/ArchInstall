@@ -18,13 +18,14 @@ echo -n "Were Checks Completed: "
 stty echo
 read randovar
 stty echo
+clear
 
 #select hard disk
 lsblk
 echo -n "Enter Disk Name: /dev/"
+stty echo
 read harddisk
-
-: ${randovar:?"Were Checks Completed: "}
+stty echo
 
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
@@ -56,8 +57,8 @@ mount /dev/"$harddisk"3 /mnt/home
 
 #rank mirrorlist
 cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
-pacman -Syu
-pacman -S pacman-contrib
+pacman -Syu --noconfirm
+pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
 #install linux + packages to mount drive
@@ -66,15 +67,20 @@ linux-lts
 linux-hardened
 linux-zen"
 echo -n "Select A Kernel: "
+stty echo
 read kernel
+stty echo
 
 pacstrap /mnt base base-devel "$kernel" "$kernel"-headers linux-firmware sudo nano
 
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
+#create 2nd script to run in chroot
+cat <<'EOF' > /mnt/root/part2.sh
+
 #change root to mounted drive
-arch-chroot /mnt
+#arch-chroot /mnt
 
 #set timezone
 ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
@@ -96,19 +102,21 @@ echo KEYMAP=uk >> /etc/vconsole.conf
 
 #set hostname
 echo -n "Hostname: "
+stty echo
 read hostname
+stty echo
 echo $hostname >> /etc/hostname
 
 #enable multilib for 32bit apps
 echo "[multilib]
 Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
-pacman -Syu
+pacman -Syu --noconfirm
 
 #enable SSD trim support
 systemctl enable fstrim.timer
 
 #setup dhcpcd + network manager
-pacman -S dhcpcd networkmanager
+pacman -S --noconfirm dhcpcd networkmanager
 systemctl enable dhcpcd@enp3s0.service
 systemctl enable NetworkManager.service
 
@@ -119,12 +127,16 @@ rootpass2=2
 while [ $rootpass1 != $rootpass2 ]
 do
 echo -n "Set Root Password: "
+stty echo
 read -s rootpass1
+stty echo
 
 echo \
 
 echo -n "Confirm Password: "
+stty echo
 read -s rootpass2
+stty echo
 
 echo \
 
@@ -149,7 +161,9 @@ echo %wheel ALL=(ALL:ALL) ALL >> /etc/sudoers.tmp
 
 #add account
 echo -n "Enter Username: "
+stty echo
 read username
+stty echo
 useradd -m -g users -G wheel,storage -s /bin/bash $username
 echo -en "$rootpass\n$rootpassw" | passwd $username
 
@@ -175,19 +189,23 @@ echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
 #install cpu microcode
-pacman -S amd-ucode
+pacman -S --noconfirm amd-ucode
 
 #install amd gpu drivers
-sudo pacman -S mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
+sudo pacman -S --noconfirm mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
 
 #install audio system
-pacman -S jack2 lib32-jack2 jack_mixer cadence
+pacman -S --noconfirm jack2 lib32-jack2 jack_mixer cadence
 
 #final update
-pacman -Syu
+pacman -Syu --noconfirm
+
 
 #exit chroot
 exit
+EOF
+
+arch-chroot /mnt /root/part2.sh
 
 #reboot system
 reboot
