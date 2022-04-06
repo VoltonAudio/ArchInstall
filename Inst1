@@ -9,11 +9,11 @@ stty echo
 read randovar
 stty echo
 clear
-echo randovar
+echo $randovar
 
 #select hard disk
 lsblk
-if [ "$1" == "" ]; then
+if [ "$harddisk" == "" ]; then
   echo "Enter Disk Name: /dev/"
   read harddisk
   echo $harddisk
@@ -21,7 +21,7 @@ if [ "$1" == "" ]; then
   read rando
   echo $rando
 else
-  echo $1
+  echo $harddisk
 fi
 
 hostname=$(dialog --stdout --inputbox "Enter hostname" 0 0) || exit 1
