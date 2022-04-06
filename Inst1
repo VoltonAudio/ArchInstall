@@ -79,6 +79,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 #create 2nd script to run in chroot
 cat <<'EOF' > /mnt/root/part2.sh
 
+#! /bin/bash
 #change root to mounted drive
 #arch-chroot /mnt
 
