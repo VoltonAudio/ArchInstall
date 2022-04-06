@@ -5,31 +5,40 @@ systemctl --failed
 
 #ask user if checks completed
 echo -n "Were Checks Completed: "
+stty echo
 read randovar
+stty echo
 
 #install firewall
-pacman -S nftables
+pacman -S --noconfirm nftables
 systemctl enable nftables.service
 systemctl start nftables.service
-pacman -S firewalld
+pacman -S --noconfirm firewalld
 systemctl enable firewalld.service
 systemctl start firewalld.service
 
 #install Xorg
-pacman -S xorg-server xorg-xinit
+pacman -S --noconfirm xorg-server xorg-xinit
 
 #install sddm
-pacman -S sddm
+pacman -S --noconfirm sddm
 systemctl enable sddm.service
 
 #install Plasma
-pacman -S plasma-desktop
-pacman -S dolphin konsole kgpg kcalc kate partitionmanager ksystemlog gwenview spectacle git gnupg ntfs-3g
+pacman -S --noconfirm plasma-desktop
+pacman -S --noconfirm dolphin konsole kgpg kcalc kate partitionmanager ksystemlog gwenview spectacle git gnupg ntfs-3g
 
 #install additional packages
 echo "Type Additional Packages Seperated By A Space"
-read packages
-pacman -S $packages
+stty echo
+read addpackages
+stty echo
+if [ -z "$addpackages" ]
+then
+      echo "No Additional Packages"
+else
+      pacman -S --noconfirm $packages
+fi
 
 #reboot
 reboot
