@@ -19,13 +19,11 @@ timedatectl set-ntp true
 #ask user if checks completed
 echo -n "Were Checks Completed: "
 read randovar
-clear
 
 #select hard disk
 lsblk
 echo -n "Enter Disk Name: /dev/"
 read harddisk
-
 
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
@@ -35,7 +33,7 @@ sgdisk -n 0:0:+1024MiB /dev/"$harddisk"
 sgdisk -c 1:boot /dev/"$harddisk"
 sgdisk -t 1:ef00 /dev/"$harddisk"
 
-sgdisk -n 0:0:+102MiB /dev/"$harddisk"
+sgdisk -n 0:0:+35GiB /dev/"$harddisk"
 sgdisk -c 2:root /dev/"$harddisk"
 sgdisk -t 2:8300 /dev/"$harddisk"
 
@@ -68,15 +66,24 @@ linux-hardened
 linux-zen"
 echo -n "Select A Kernel: "
 read kernel
-pacstrap /mnt base base-devel "$kernel" "$kernel"-headers linux-firmware sudo nano
+kernelheaders=$kernel"-headers"
+pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware sudo nano
 
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
 #create 2nd script to run in chroot
 cat <<'EOF' > /mnt/root/part2.sh
-
 #! /bin/bash
+set -uo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+
+EOF
+
+echo"kernel=$kernel
+harddisk=$harddisk" >> /mnt/root/part2.sh
+
+cat <<'EOF' >> /mnt/root/part2.sh
 
 #set timezone
 ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
@@ -85,7 +92,7 @@ ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
 hwclock --systohc
 
 #edit locale.gen
-echo en_IE.UTF-8 UTF-8 >> /etc/locale.gen
+echo "en_IE.UTF-8 UTF-8" >> /etc/locale.gen
 
 #generate locale.conf
 locale-gen
@@ -133,7 +140,7 @@ echo \
 if [ "$rootpass1" == "$rootpass2" ]
 then
 printf "Passwords Match"
-echo -en "$rootpass\n$rootpassw" | passwd
+echo -en "$rootpass1\n$rootpass2" | passwd
 echo \
 
 else
@@ -153,7 +160,7 @@ echo %wheel ALL=(ALL:ALL) ALL >> /etc/sudoers.tmp
 echo -n "Enter Username: "
 read username
 useradd -m -g users -G wheel,storage -s /bin/bash $username
-echo -en "$rootpass\n$rootpassw" | passwd $username
+echo -en "$rootpass1\n$rootpass1" | passwd $username
 
 #install bootloader
 bootctl install
@@ -162,13 +169,13 @@ bootctl install
 echo "default $hostname
 timeout 3
 console-mode max
-editor no" >> /boot/loader/loader.conf
+editor no" > /boot/loader/loader.conf
 
 #edit arch.conf
 echo "title $hostname
 linux /vmlinuz-$kernel
 initrd /amd-ucode.img
-initrd /initramfs-$kernel.img" >> /boot/loader/entries/"$hostname".conf
+initrd /initramfs-$kernel.img" > /boot/loader/entries/"$hostname".conf
 
 #add PARTUUID to arch.conf
 echo -n "options root=PARTUUID=" >> /boot/loader/entries/"$hostname".conf
