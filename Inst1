@@ -80,8 +80,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 cat <<'EOF' > /mnt/root/part2.sh
 
 #! /bin/bash
-#change root to mounted drive
-#arch-chroot /mnt
 
 #set timezone
 ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
