@@ -179,7 +179,7 @@ initrd /initramfs-$kernel.img" > /boot/loader/entries/"$hostname".conf
 
 #add PARTUUID to arch.conf
 echo -n "options root=PARTUUID=" >> /boot/loader/entries/"$hostname".conf
-hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"1)
+hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"2)
 echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
