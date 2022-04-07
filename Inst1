@@ -43,8 +43,8 @@ sgdisk -t 3:8300 /dev/"$harddisk"
 
 #format partitions to correct file system
 mkfs.fat -F32 /dev/"$harddisk"1
-mkfs.ext4 /dev/"$harddisk"2
-mkfs.ext4 /dev/"$harddisk"3
+mkfs.ext4 -F /dev/"$harddisk"2
+mkfs.ext4 -F /dev/"$harddisk"3
 
 #mount partitions
 mount /dev/"$harddisk"2 /mnt
@@ -80,7 +80,7 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 EOF
 
-echo"kernel=$kernel
+echo "kernel=$kernel
 harddisk=$harddisk" >> /mnt/root/part2.sh
 
 cat <<'EOF' >> /mnt/root/part2.sh
@@ -154,7 +154,7 @@ fi
 done
 
 #edit sudo
-echo %wheel ALL=(ALL:ALL) ALL >> /etc/sudoers.tmp
+echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers.tmp
 
 #add account
 echo -n "Enter Username: "
@@ -200,7 +200,7 @@ pacman -Syu --noconfirm
 exit
 EOF
 
-arch-chroot /mnt /root/part2.sh
+arch-chroot /mnt bash /root/part2.sh
 
 #reboot system
-#reboot
+reboot
