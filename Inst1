@@ -154,7 +154,7 @@ fi
 done
 
 #edit sudo
-echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers.tmp
+echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 #add account
 echo -n "Enter Username: "
