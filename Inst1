@@ -98,10 +98,10 @@ echo "en_IE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 
 #edit locale.conf
-echo LANG=en_IE.UTF-8 >> /etc/locale.conf
+echo "LANG=en_IE.UTF-8" >> /etc/locale.conf
 
 #set keyboard layout
-echo KEYMAP=uk >> /etc/vconsole.conf
+echo "KEYMAP=uk" >> /etc/vconsole.conf
 
 #set hostname
 echo -n "Hostname: "
