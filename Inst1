@@ -3,6 +3,57 @@
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
+#select hard disk
+lsblk
+echo -n "Enter Disk Name: /dev/"
+read harddisk
+
+#select a kernel
+echo "linux
+linux-lts
+linux-hardened
+linux-zen"
+echo -n "Select A Kernel: "
+read kernel
+kernelheaders=$kernel"-headers"
+
+#set hostname
+echo -n "Hostname: "
+read hostname
+
+#enter username
+echo -n "Enter Username: "
+read username
+
+#set password
+rootpass1=1
+rootpass2=2
+
+while [ $rootpass1 != $rootpass2 ]
+do
+echo -n "Set Root Password: "
+read -s rootpass1
+echo \
+
+echo -n "Confirm Password: "
+read -s rootpass2
+echo \
+
+if [ "$rootpass1" == "$rootpass2" ]
+then
+    printf "Passwords Match"
+    echo \
+
+else
+    printf "Passwords Don't Match"
+    echo \
+
+    printf "Please Try Again"
+    echo \
+
+fi
+done
+
 #verify EUFI mode
 ls /sys/firmware/efi/efivars
 
@@ -19,11 +70,6 @@ timedatectl set-ntp true
 #ask user if checks completed
 echo -n "Were Checks Completed: "
 read randovar
-
-#select hard disk
-lsblk
-echo -n "Enter Disk Name: /dev/"
-read harddisk
 
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
@@ -60,13 +106,6 @@ pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
 #install linux + packages to mount drive
-echo "linux
-linux-lts
-linux-hardened
-linux-zen"
-echo -n "Select A Kernel: "
-read kernel
-kernelheaders=$kernel"-headers"
 pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware sudo nano
 
 #generate fstab
@@ -81,6 +120,8 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 EOF
 
 echo "kernel=$kernel
+hostname=$hostname
+rootpass=$rootpass1
 harddisk=$harddisk" >> /mnt/root/part2.sh
 
 cat <<'EOF' >> /mnt/root/part2.sh
@@ -104,8 +145,6 @@ echo "LANG=en_IE.UTF-8" >> /etc/locale.conf
 echo "KEYMAP='uk'" >> /etc/vconsole.conf
 
 #set hostname
-echo -n "Hostname: "
-read hostname
 echo $hostname >> /etc/hostname
 
 #enable multilib for 32bit apps
@@ -122,43 +161,12 @@ systemctl enable dhcpcd@enp3s0.service
 systemctl enable NetworkManager.service
 
 #set password
-rootpass1=1
-rootpass2=2
-
-while [ $rootpass1 != $rootpass2 ]
-do
-echo -n "Set Root Password: "
-read -s rootpass1
-
-echo \
-
-echo -n "Confirm Password: "
-read -s rootpass2
-
-echo \
-
-if [ "$rootpass1" == "$rootpass2" ]
-then
-printf "Passwords Match"
-echo -en "$rootpass1\n$rootpass2" | passwd
-echo \
-
-else
-printf "Passwords Don't Match"
-echo \
-
-printf "Please Try Again"
-echo \
-
-fi
-done
+echo -en "$rootpass\n$rootpass" | passwd
 
 #edit sudo
 echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 #add account
-echo -n "Enter Username: "
-read username
 useradd -m -g users -G wheel,storage -s /bin/bash $username
 echo -en "$rootpass1\n$rootpass1" | passwd $username
 
