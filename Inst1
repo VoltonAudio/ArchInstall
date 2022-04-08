@@ -168,7 +168,7 @@ echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 #add account
 useradd -m -g users -G wheel,storage -s /bin/bash $username
-echo -en "$rootpass1\n$rootpass1" | passwd $username
+echo -en "$rootpass\n$rootpass" | passwd $username
 
 #install bootloader
 bootctl install
