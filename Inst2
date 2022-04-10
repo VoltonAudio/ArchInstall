@@ -10,6 +10,28 @@ systemctl --failed
 echo -n "Were Checks Completed: "
 read randovar
 
+#enter additional packages
+echo "Type Additional Packages Seperated By A Space"
+read addpackages
+
+#install Xorg
+pacman -S --noconfirm xorg-server xorg-xinit
+
+#install sddm
+pacman -S --noconfirm sddm sddm-kcm
+systemctl enable sddm.service
+
+#install Plasma
+pacman -S --noconfirm plasma-desktop
+pacman -S --noconfirm kscreen plasma-disks plasma-firewall plasma-systemmonitor discover kinfocenter ksystemlog dolphin konsole powerdevil bluedevil kde-gtk-config breeze-gtk plasma-workspace-wallpapers
+
+#install audio system
+pacman -S --noconfirm pulseaudio plasma-pa
+#jack2 lib32-jack2 jack_mixer cadence
+
+#install commonly used packages
+pacman -S kcalc partitionmanager gwenview spectacle gnupg git testdisk vim KHotKeys blender python neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
+
 #install firewall
 pacman -S --noconfirm nftables
 systemctl enable nftables.service
@@ -18,20 +40,11 @@ pacman -S --noconfirm firewalld
 systemctl enable firewalld.service
 systemctl start firewalld.service
 
-#install Xorg
-pacman -S --noconfirm xorg-server xorg-xinit
-
-#install sddm
-pacman -S --noconfirm sddm
-systemctl enable sddm.service
-
-#install Plasma
-pacman -S --noconfirm plasma-desktop
-pacman -S --noconfirm dolphin konsole kgpg kcalc kate partitionmanager ksystemlog gwenview spectacle git gnupg ntfs-3g
+#install openssh
+pacman -S --noconfirm openssh
+systemctl enable sshd
 
 #install additional packages
-echo "Type Additional Packages Seperated By A Space"
-read addpackages
 if [ -z "$addpackages" ]
 then
       echo "No Additional Packages"
@@ -40,4 +53,4 @@ else
 fi
 
 #reboot
-reboot
+#reboot
