@@ -203,10 +203,7 @@ echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
 #install amd gpu drivers
-pacman -S --noconfirm mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
-
-#install audio system
-pacman -S --noconfirm jack2 lib32-jack2 jack_mixer cadence
+pacman -S --noconfirm mesa mesa-utils lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
 
 #exit chroot
 exit
