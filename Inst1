@@ -106,7 +106,7 @@ pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
 #install linux + packages to mount drive
-pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware sudo nano
+pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware amd-ucode sudo nano
 
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -133,23 +133,34 @@ ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
 hwclock --systohc
 
 #edit locale.gen
-echo "en_IE.UTF-8 UTF-8" >> /etc/locale.gen
+sed --in-place=.bak 's/^#en_IE\.UTF-8/en_IE\.UTF-8/' /etc/locale.gen
 
 #generate locale.conf
 locale-gen
 
 #edit locale.conf
-echo "LANG=en_IE.UTF-8" >> /etc/locale.conf
+#echo "LANG=en_IE.UTF-8" > /etc/locale.conf
+localectl set-locale LANG=en_IE.UTF-8
 
 #set keyboard layout
-echo "KEYMAP='uk'" >> /etc/vconsole.conf
+echo "KEYMAP=gb" >> /etc/vconsole.conf
+localectl set-x11-keymap gb
 
 #set hostname
 echo $hostname >> /etc/hostname
 
+#set hosts
+echo "127.0.0.1   localhost
+::1         localhost
+127.0.1.1   $hostname" >> /etc/hosts
+
 #enable multilib for 32bit apps
-echo "[multilib]
-Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+sed -i -e 's/^$/polt/' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/\n/,"polk")}1' /etc/pacman.conf
+sed -i 's_\#\[multilib\]polk\#Include = \/etc\/pacman.d\/mirrorlist_\[multilib\]polkInclude = \/etc\/pacman.d\/mirrorlist_' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polk/,"\n")}1' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polt/,"")}1' /etc/pacman.conf
+
 pacman -Syu --noconfirm
 
 #enable SSD trim support
@@ -164,7 +175,7 @@ systemctl enable NetworkManager.service
 echo -en "$rootpass\n$rootpass" | passwd
 
 #edit sudo
-echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+sed -i 's/\# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers.tmp
 
 #add account
 useradd -m -g users -G wheel,storage -s /bin/bash $username
@@ -191,18 +202,11 @@ hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"2)
 echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
-#install cpu microcode
-pacman -S --noconfirm amd-ucode
-
 #install amd gpu drivers
-sudo pacman -S --noconfirm mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
+pacman -S --noconfirm mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
 
 #install audio system
 pacman -S --noconfirm jack2 lib32-jack2 jack_mixer cadence
-
-#final update
-pacman -Syu --noconfirm
-
 
 #exit chroot
 exit
@@ -211,4 +215,4 @@ EOF
 arch-chroot /mnt bash /root/part2.sh
 
 #reboot system
-reboot
+#reboot
