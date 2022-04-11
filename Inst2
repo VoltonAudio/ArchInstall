@@ -10,13 +10,12 @@ systemctl --failed
 echo -n "Were Checks Completed: "
 read randovar
 
-#enter username
-echo -n "Enter Username: "
-read username
-
 #enter additional packages
 echo "Type Additional Packages Seperated By A Space"
 read addpackages
+
+#install amd gpu drivers
+pacman -S --noconfirm mesa mesa-utils lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
 
 #install Xorg
 pacman -S --noconfirm xorg-server xorg-xinit
@@ -34,7 +33,7 @@ pacman -S --noconfirm pulseaudio plasma-pa
 #jack2 lib32-jack2 jack_mixer cadence
 
 #install commonly used packages
-pacman -S kcalc partitionmanager gwenview spectacle gnupg git testdisk vim KHotKeys blender python neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
+pacman -S kcalc partitionmanager gwenview spectacle gnupg git testdisk vim khotkeys blender python neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
 
 #install firewall
 pacman -S --noconfirm nftables
@@ -47,90 +46,6 @@ systemctl start firewalld.service
 #install openssh
 pacman -S --noconfirm openssh
 systemctl enable sshd
-
-#install yay
-mkdir -p /home/$username/Documents/git/aur
-chown $username:users /home/$username/Documents/git/
-chown $username:users /home/$username/Documents/git/aur/
-git clone https://aur.archlinux.org/yay.git /home/$username/Documents/git/aur/yay
-chown $username:users /home/$username/Documents/git/aur/yay
-cd /home/$username/Documents/git/aur/yay && sudo -u $username makepkg -sicr
-
-#install mullvad
-aururl=https://aur.archlinux.org/mullvad-vpn-bin.git
-packurl=$( sed 's/.*.org\///' <<< $aururl )
-pack=$( cut -f1 -d"." <<< $packurl )
-
-git clone $aururl /home/$username/Documents/git/aur/$pack
-chown $username:users /home/$username/Documents/git/aur/$pack
-if grep -Fq validpgpkeys /home/$username/Documents/git/aur/$pack/PKGBUILD
-then
-    #remove everything before validpgpkeys
-    gawk '/validpgpkeys/{p=1}p' /home/$username/Documents/git/aur/$pack/PKGBUILD > /home/$username/Documents/PKGBUILDtemp
-    #replace ' with "
-    sed "s/'/\"/g" /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #remove comments
-    grep -o '^[^#]*' /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #remove all newlines
-    awk -v RS="" '{gsub (/\n/," ")}1' /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #remove all whitespace
-    sed 's/ //g' /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #remove everything after )
-    cut -f1 -d")" /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #add ) to end of file
-    sed -i '1 s/$/ )/' /home/$username/Documents/PKGBUILDtemp1
-    #add whitespace between ""
-    sed "s/\"\"/\" \"/g" /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #declare variables in file
-    source /home/$username/Documents/PKGBUILDtemp
-    #add each key to keyring
-    for KEYS in "${validpgpkeys[@]}"; do
-        sudo -u $username gpg --keyserver-options auto-key-retrieve --recv-key $KEYS
-    done
-else
-    echo "no pgp required"
-fi
-rm -r /home/$username/Documents/PKGBUILDtemp
-rm -r /home/$username/Documents/PKGBUILDtemp1
-cd /home/$username/Documents/git/aur/$pack && sudo -u $username makepkg -sicr
-
-#install librewolf
-aururl=https://aur.archlinux.org/librewolf-bin.git
-packurl=$( sed 's/.*.org\///' <<< $aururl )
-pack=$( cut -f1 -d"." <<< $packurl )
-
-git clone $aururl /home/$username/Documents/git/aur/$pack
-chown $username:users /home/$username/Documents/git/aur/$pack
-if grep -Fq validpgpkeys /home/$username/Documents/git/aur/$pack/PKGBUILD
-then
-    #remove everything before validpgpkeys
-    gawk '/validpgpkeys/{p=1}p' /home/$username/Documents/git/aur/$pack/PKGBUILD > /home/$username/Documents/PKGBUILDtemp
-    #replace ' with "
-    sed "s/'/\"/g" /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #remove comments
-    grep -o '^[^#]*' /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #remove all newlines
-    awk -v RS="" '{gsub (/\n/," ")}1' /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #remove all whitespace
-    sed 's/ //g' /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #remove everything after )
-    cut -f1 -d")" /home/$username/Documents/PKGBUILDtemp > /home/$username/Documents/PKGBUILDtemp1
-    #add ) to end of file
-    sed -i '1 s/$/ )/' /home/$username/Documents/PKGBUILDtemp1
-    #add whitespace between ""
-    sed "s/\"\"/\" \"/g" /home/$username/Documents/PKGBUILDtemp1 > /home/$username/Documents/PKGBUILDtemp
-    #declare variables in file
-    source /home/$username/Documents/PKGBUILDtemp
-    #add each key to keyring
-    for KEYS in "${validpgpkeys[@]}"; do
-        sudo -u $username gpg --keyserver-options auto-key-retrieve --recv-key $KEYS
-    done
-else
-    echo "no pgp required"
-fi
-rm -r /home/$username/Documents/PKGBUILDtemp
-rm -r /home/$username/Documents/PKGBUILDtemp1
-cd /home/$username/Documents/git/aur/$pack && sudo -u $username makepkg -sicr
 
 #install additional packages
 if [ -z "$addpackages" ]
