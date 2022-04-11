@@ -33,7 +33,7 @@ pacman -S --noconfirm pulseaudio plasma-pa
 #jack2 lib32-jack2 jack_mixer cadence
 
 #install commonly used packages
-pacman -S kcalc partitionmanager gwenview spectacle gnupg git testdisk vim khotkeys blender python neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
+pacman -S kcalc partitionmanager gwenview spectacle gnupg git testdisk vim kate khotkeys blender python neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
 
 #install firewall
 pacman -S --noconfirm nftables
