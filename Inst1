@@ -71,6 +71,9 @@ timedatectl set-ntp true
 echo -n "Were Checks Completed: "
 read randovar
 
+#install packages needed for keyboard layout
+pacman -S libxkbcommon libxkbcommon-x11
+
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
 
@@ -122,7 +125,8 @@ EOF
 echo "kernel=$kernel
 hostname=$hostname
 rootpass=$rootpass1
-harddisk=$harddisk" >> /mnt/root/part2.sh
+harddisk=$harddisk
+username=$username" >> /mnt/root/part2.sh
 
 cat <<'EOF' >> /mnt/root/part2.sh
 
@@ -143,6 +147,7 @@ locale-gen
 localectl set-locale LANG=en_IE.UTF-8
 
 #set keyboard layout
+pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 echo "KEYMAP=uk" >> /etc/vconsole.conf
 localectl set-x11-keymap gb
 
@@ -175,7 +180,7 @@ systemctl enable NetworkManager.service
 echo -en "$rootpass\n$rootpass" | passwd
 
 #edit sudo
-sed -i 's/\# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers.tmp
+sed -i 's/\# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 
 #add account
 useradd -m -g users -G wheel,storage -s /bin/bash $username
