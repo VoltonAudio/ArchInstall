@@ -72,7 +72,8 @@ echo -n "Were Checks Completed: "
 read randovar
 
 #install packages needed for keyboard layout
-pacman -S libxkbcommon libxkbcommon-x11
+pacman -Syu --noconfirm
+pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
@@ -104,7 +105,6 @@ mount /dev/"$harddisk"3 /mnt/home
 
 #rank mirrorlist
 cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
-pacman -Syu --noconfirm
 pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
