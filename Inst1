@@ -143,8 +143,8 @@ sed --in-place=.bak 's/^#en_IE\.UTF-8/en_IE\.UTF-8/' /etc/locale.gen
 locale-gen
 
 #edit locale.conf
-#echo "LANG=en_IE.UTF-8" > /etc/locale.conf
 localectl set-locale LANG=en_IE.UTF-8
+echo "LC_ALL=en_IE.UTF-8" >> /etc/locale.conf
 
 #set keyboard layout
 pacman -S --noconfirm libxkbcommon libxkbcommon-x11
@@ -180,7 +180,7 @@ systemctl enable NetworkManager.service
 echo -en "$rootpass\n$rootpass" | passwd
 
 #edit sudo
-sed -i 's/\# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+echo "%wheel ALL=(ALL) ALL" /etc/sudoers.d/99_wheel
 
 #add account
 useradd -m -g users -G wheel,storage -s /bin/bash $username
