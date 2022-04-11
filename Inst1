@@ -180,8 +180,8 @@ systemctl enable NetworkManager.service
 echo -en "$rootpass\n$rootpass" | passwd
 
 #edit sudo
-echo "%wheel ALL=(ALL) ALL" /etc/sudoers.tmp
-#d/99_wheel
+sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+#sed -i '/%wheel ALL=(ALL) ALL/s/^#//' /etc/sudoers
 
 #add account
 useradd -m -g users -G wheel,storage -s /bin/bash $username
