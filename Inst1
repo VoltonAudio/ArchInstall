@@ -207,9 +207,6 @@ hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"2)
 echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
-#install amd gpu drivers
-pacman -S --noconfirm mesa mesa-utils lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
-
 #exit chroot
 exit
 EOF
