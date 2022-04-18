@@ -71,10 +71,6 @@ timedatectl set-ntp true
 echo -n "Were Checks Completed: "
 read randovar
 
-#install packages needed for keyboard layout
-pacman -Syu --noconfirm
-pacman -S --noconfirm libxkbcommon libxkbcommon-x11
-
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
 
@@ -107,6 +103,9 @@ mount /dev/"$harddisk"3 /mnt/home
 cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
 pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+
+#install packages needed for keyboard layout
+pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 
 #install linux + packages to mount drive
 pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware amd-ucode sudo nano
@@ -150,6 +149,7 @@ echo "LC_ALL=en_IE.UTF-8" >> /etc/locale.conf
 pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 echo "KEYMAP=uk" >> /etc/vconsole.conf
 localectl set-x11-keymap gb
+setxkbmap -layout gb
 
 #set hostname
 echo $hostname >> /etc/hostname
@@ -214,5 +214,8 @@ EOF
 
 arch-chroot /mnt bash /root/part2.sh
 
+#sync all cache data to hdd
+sync
+
 #reboot system
-#reboot
+reboot
