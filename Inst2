@@ -63,14 +63,12 @@ fi
 mkdir /home/$username/Drives/1TB
 mkdir /home/$username/Drives/2TB
 mkdir /home/$username/Drives/3TB
-mkdir /home/$username/Drives/6TB
 mkdir /home/$username/Drives/256GB
 echo "
 UUID=EE36076636072F61                       /home/volton/Drives/256GB   ntfs   defaults                                                                                                0 0
 UUID=06AAF222AAF20DC5                       /home/volton/Drives/1TB     ntfs   defaults                                                                                                0 0
 UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   defaults                                                                                                0 0
 UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
-UUID=F0FE77B7FE777526                       /home/volton/Drives/6TB     ntfs   defaults                                                                                                0 0
 " >> /etc/fstab
 
 #set mouse speed and acceleration in KDE
