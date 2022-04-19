@@ -60,6 +60,7 @@ else
 fi
 
 #Mount internal HDD's and SSD's
+mkdir /home/$username/Drives
 mkdir /home/$username/Drives/1TB
 mkdir /home/$username/Drives/2TB
 mkdir /home/$username/Drives/3TB
