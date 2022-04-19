@@ -72,6 +72,9 @@ UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   d
 UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
 " >> /etc/fstab
 
+#copy post.sh
+cp /home/volton/Drives/1TB/ArchSetup/post.sh /home/volton/
+
 #sync all cache data to hdd
 sync
 
