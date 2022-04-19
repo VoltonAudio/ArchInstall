@@ -101,6 +101,7 @@ mount /dev/"$harddisk"3 /mnt/home
 
 #rank mirrorlist
 cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
+pacman -Syu --noconfirm
 pacman -S --noconfirm pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
@@ -146,7 +147,6 @@ localectl set-locale LANG=en_IE.UTF-8
 echo "LC_ALL=en_IE.UTF-8" >> /etc/locale.conf
 
 #set keyboard layout
-pacman -Syu --noconfirm
 pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 echo "KEYMAP=uk" >> /etc/vconsole.conf
 localectl set-x11-keymap gb
