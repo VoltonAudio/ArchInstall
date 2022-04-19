@@ -146,6 +146,7 @@ localectl set-locale LANG=en_IE.UTF-8
 echo "LC_ALL=en_IE.UTF-8" >> /etc/locale.conf
 
 #set keyboard layout
+pacman -Syu --noconfirm
 pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 echo "KEYMAP=uk" >> /etc/vconsole.conf
 localectl set-x11-keymap gb
