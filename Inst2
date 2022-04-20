@@ -120,16 +120,16 @@ UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   d
 " >> /etc/fstab
 
 #copy post.sh
-cp /home/volton/Drives/1TB/ArchSetup/post.sh /home/volton/
+#cp /home/volton/Drives/1TB/ArchSetup/post.sh /home/volton/
 
 #install plymouth
-git clone https://aur.archlinux.org/plymouth.git /home/$username/plymouth
-chown $username:users /home/$username/plymouth
-cd /home/$username/plymouth && sudo -u $username makepkg -sicr --noconfirm
+#git clone https://aur.archlinux.org/plymouth.git /home/$username/plymouth
+#chown $username:users /home/$username/plymouth
+#cd /home/$username/plymouth && sudo -u $username makepkg -sicr --noconfirm
 
 #add plymouth hook
-sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev plymouth autodetect modconf block filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
-mkinitcpio -p $kernel
+#sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev plymouth autodetect modconf block filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
+#mkinitcpio -p $kernel
 
 #sync all cache data to hdd
 sync
