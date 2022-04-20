@@ -3,6 +3,23 @@
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
+#verify EUFI mode
+ls /sys/firmware/efi/efivars
+
+#set keyboard layout
+loadkeys uk
+
+#test network
+ip link
+ping -c 2 archlinux.org
+
+#update system clock
+timedatectl set-ntp true
+
+#ask user if checks completed
+echo -n "Were Checks Completed: "
+read randovar
+
 #select hard disk
 lsblk
 echo -n "Enter Disk Name: /dev/"
@@ -54,23 +71,6 @@ else
 fi
 done
 
-#verify EUFI mode
-ls /sys/firmware/efi/efivars
-
-#set keyboard layout
-loadkeys uk
-
-#test network
-ip link
-ping -c 2 archlinux.org
-
-#update system clock
-timedatectl set-ntp true
-
-#ask user if checks completed
-echo -n "Were Checks Completed: "
-read randovar
-
 #wipe disk "$harddisk"
 sgdisk --zap-all /dev/"$harddisk"
 
@@ -101,12 +101,10 @@ mount /dev/"$harddisk"3 /mnt/home
 
 #rank mirrorlist
 cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
-pacman -Sy --noconfirm
-pacman -S --noconfirm pacman-contrib
-rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-
-#install packages needed for keyboard layout
-pacman -S --noconfirm libxkbcommon libxkbcommon-x11
+#pacman -Sy --noconfirm
+#pacman -S --noconfirm pacman-contrib
+#rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 #install linux + packages to mount drive
 pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware amd-ucode sudo nano
@@ -130,50 +128,8 @@ username=$username" >> /mnt/root/part2.sh
 
 cat <<'EOF' >> /mnt/root/part2.sh
 
-#set timezone
-ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
-
-#set hwclock
-hwclock --systohc
-
-#edit locale.gen
-sed --in-place=.bak 's/^#en_IE\.UTF-8/en_IE\.UTF-8/' /etc/locale.gen
-
-#generate locale.conf
-locale-gen
-
-#edit locale.conf
-localectl set-locale LANG=en_IE.UTF-8
-
-#set keyboard layout
-echo "KEYMAP=uk" >> /etc/vconsole.conf
-localectl set-x11-keymap gb
-#setxkbmap -layout gb
-
 #set hostname
 echo $hostname >> /etc/hostname
-
-#set hosts
-echo "127.0.0.1   localhost
-::1         localhost
-127.0.1.1   $hostname" >> /etc/hosts
-
-#enable multilib for 32bit apps
-sed -i -e 's/^$/polt/' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/\n/,"polk")}1' /etc/pacman.conf
-sed -i 's_\#\[multilib\]polk\#Include = \/etc\/pacman.d\/mirrorlist_\[multilib\]polkInclude = \/etc\/pacman.d\/mirrorlist_' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/polk/,"\n")}1' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/polt/,"")}1' /etc/pacman.conf
-
-pacman -Syu --noconfirm
-
-#enable SSD trim support
-systemctl enable fstrim.timer
-
-#setup dhcpcd + network manager
-pacman -S --noconfirm dhcpcd networkmanager
-systemctl enable dhcpcd@enp3s0.service
-systemctl enable NetworkManager.service
 
 #set password
 echo -en "$rootpass\n$rootpass" | passwd
@@ -187,6 +143,7 @@ useradd -m -g users -G wheel,storage -s /bin/bash $username
 echo -en "$rootpass\n$rootpass" | passwd $username
 
 #install bootloader
+pacman -Syu --noconfirm
 bootctl install
 
 #edit loader.conf
