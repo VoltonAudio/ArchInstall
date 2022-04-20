@@ -144,7 +144,6 @@ locale-gen
 
 #edit locale.conf
 localectl set-locale LANG=en_IE.UTF-8
-echo "LC_ALL=en_IE.UTF-8" >> /etc/locale.conf
 
 #set keyboard layout
 echo "KEYMAP=uk" >> /etc/vconsole.conf
