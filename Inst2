@@ -14,9 +14,40 @@ read randovar
 echo -n "Enter Username: "
 read username
 
+#enter kernel
+echo -n "Enter Kernel: "
+read kernel
+
 #enter additional packages
 echo "Type Additional Packages Seperated By A Space"
 read addpackages
+
+#enable multilib for 32bit apps
+sed -i -e 's/^$/polt/' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/\n/,"polk")}1' /etc/pacman.conf
+sed -i 's_\#\[multilib\]polk\#Include = \/etc\/pacman.d\/mirrorlist_\[multilib\]polkInclude = \/etc\/pacman.d\/mirrorlist_' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polk/,"\n")}1' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polt/,"")}1' /etc/pacman.conf
+
+#set hosts
+echo "127.0.0.1   localhost
+::1         localhost
+127.0.1.1   $HOSTNAME" >> /etc/hosts
+
+#set timezone
+ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime
+
+#set hwclock
+hwclock --systohc
+
+#edit locale.gen
+sed --in-place=.bak 's/^#en_IE\.UTF-8/en_IE\.UTF-8/' /etc/locale.gen
+
+#generate locale.conf
+locale-gen
+
+#edit locale.conf
+localectl set-locale LANG=en_IE.UTF-8
 
 #install amd gpu drivers
 pacman -S --noconfirm mesa mesa-utils lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
@@ -39,6 +70,11 @@ pacman -S --noconfirm pulseaudio plasma-pa
 #install commonly used packages
 pacman -S --noconfirm kcalc partitionmanager gwenview spectacle gnupg git testdisk vim kate khotkeys blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
 
+#setup dhcpcd + network manager
+pacman -S --noconfirm dhcpcd networkmanager
+systemctl enable dhcpcd@enp3s0.service
+systemctl enable NetworkManager.service
+
 #install firewall
 pacman -S --noconfirm nftables
 systemctl enable nftables.service
@@ -51,6 +87,9 @@ systemctl start firewalld.service
 pacman -S --noconfirm openssh
 systemctl enable sshd
 
+#enable SSD trim support
+systemctl enable fstrim.timer
+
 #install additional packages
 if [ -z "$addpackages" ]
 then
@@ -58,6 +97,14 @@ then
 else
       pacman -S --noconfirm $packages
 fi
+
+#install packages needed for keyboard layout
+pacman -S --noconfirm libxkbcommon libxkbcommon-x11
+
+#set keyboard layout
+echo "KEYMAP=uk" >> /etc/vconsole.conf
+localectl set-x11-keymap gb
+setxkbmap -layout gb
 
 #Mount internal HDD's and SSD's
 mkdir /home/$username/Drives
@@ -74,6 +121,15 @@ UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   d
 
 #copy post.sh
 cp /home/volton/Drives/1TB/ArchSetup/post.sh /home/volton/
+
+#install plymouth
+git clone https://aur.archlinux.org/plymouth.git /home/$username/plymouth
+chown $username:users /home/$username/plymouth
+cd /home/$username/plymouth && sudo -u $username makepkg -sicr --noconfirm
+
+#add plymouth hook
+sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev plymouth autodetect modconf block filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
+mkinitcpio -p $kernel
 
 #sync all cache data to hdd
 sync
