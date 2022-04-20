@@ -164,6 +164,11 @@ hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"2)
 echo -n $hddid >> /boot/loader/entries/"$hostname".conf
 echo " rw" >> /boot/loader/entries/"$hostname".conf
 
+#setup dhcpcd + network manager
+pacman -S --noconfirm dhcpcd networkmanager
+systemctl enable dhcpcd@enp3s0.service
+systemctl enable NetworkManager.service
+
 #exit chroot
 exit
 EOF
