@@ -70,11 +70,6 @@ pacman -S --noconfirm pulseaudio plasma-pa
 #install commonly used packages
 pacman -S --noconfirm kcalc partitionmanager gwenview spectacle gnupg git testdisk vim kate khotkeys blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+
 
-#setup dhcpcd + network manager
-pacman -S --noconfirm dhcpcd networkmanager
-systemctl enable dhcpcd@enp3s0.service
-systemctl enable NetworkManager.service
-
 #install firewall
 pacman -S --noconfirm nftables
 systemctl enable nftables.service
