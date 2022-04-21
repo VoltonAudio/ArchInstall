@@ -22,13 +22,6 @@ read kernel
 echo "Type Additional Packages Seperated By A Space"
 read addpackages
 
-#enable multilib for 32bit apps
-sed -i -e 's/^$/polt/' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/\n/,"polk")}1' /etc/pacman.conf
-sed -i 's_\#\[multilib\]polk\#Include = \/etc\/pacman.d\/mirrorlist_\[multilib\]polkInclude = \/etc\/pacman.d\/mirrorlist_' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/polk/,"\n")}1' /etc/pacman.conf
-gawk -i inplace -v RS="" '{gsub (/polt/,"")}1' /etc/pacman.conf
-
 #set hosts
 echo "127.0.0.1   localhost
 ::1         localhost
