@@ -92,7 +92,6 @@ pacman -S --noconfirm libxkbcommon libxkbcommon-x11
 #set keyboard layout
 echo "KEYMAP=uk" >> /etc/vconsole.conf
 localectl set-x11-keymap gb
-setxkbmap -layout gb
 
 #Mount internal HDD's and SSD's
 mkdir /home/$username/Drives
