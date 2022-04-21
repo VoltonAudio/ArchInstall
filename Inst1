@@ -142,6 +142,13 @@ sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 useradd -m -g users -G wheel,storage -s /bin/bash $username
 echo -en "$rootpass\n$rootpass" | passwd $username
 
+#enable multilib for 32bit apps
+sed -i -e 's/^$/polt/' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/\n/,"polk")}1' /etc/pacman.conf
+sed -i 's_\#\[multilib\]polk\#Include = \/etc\/pacman.d\/mirrorlist_\[multilib\]polkInclude = \/etc\/pacman.d\/mirrorlist_' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polk/,"\n")}1' /etc/pacman.conf
+gawk -i inplace -v RS="" '{gsub (/polt/,"")}1' /etc/pacman.conf
+
 #install bootloader
 pacman -Syu --noconfirm
 bootctl install
