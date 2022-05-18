@@ -409,7 +409,7 @@ exit" >> /mnt/chrootscript.sh
 }
 
 runchroot(){
-arch-chroot /mnt bash /root/chrootscript.sh
+arch-chroot /mnt bash /chrootscript.sh
 }
 
 syncreboot(){
