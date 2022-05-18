@@ -871,12 +871,12 @@ systemctl enable gdm
 
 elif [ "$dewm" == "i3-gaps" ]
 then
-    #echo "
-#
-#" >> install3.sh
+    echo "
+
+" >> install3.sh
 
 else
-
+echo "fail"
 fi
 
 }
