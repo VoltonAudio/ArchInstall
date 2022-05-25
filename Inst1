@@ -175,7 +175,7 @@ fi
 }
 
 partitionsethome(){
-#sgdisk --zap-all /dev"$harddisk"
+sgdisk --zap-all /dev"$harddisk"
 echo "Size in GiB Of Root Partition?"
 read -i "+35" -e homesize
 
@@ -205,7 +205,7 @@ mount /dev/"$harddisk"3 /mnt/home
 }
 
 partitionsetnohome(){
-#sgdisk --zap-all /dev"$harddisk"
+sgdisk --zap-all /dev"$harddisk"
 
 sgdisk -n 0:0:+1024MiB /dev"$harddisk"
 sgdisk -c 1:boot /dev"$harddisk"
