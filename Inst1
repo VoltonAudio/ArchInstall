@@ -358,22 +358,22 @@ pacman -Syu --noconfirm
 bootctl install
 
 #edit loader.conf
-echo "default $hostname
+echo "default '$hostname'
 timeout 0
 console-mode max
 editor no" > /boot/loader/loader.conf
 
 #edit arch.conf
-echo "title $hostname
-linux /vmlinuz-$kernel
+echo "title '$hostname'
+linux /vmlinuz-'$kernel'
 initrd /amd-ucode.img
-initrd /initramfs-$kernel.img" > /boot/loader/entries/"$hostname".conf
+initrd /initramfs-'$kernel'.img" > /boot/loader/entries/'$hostname'.conf
 
 #add PARTUUID to arch.conf
-echo -n "options root=PARTUUID=" >> /boot/loader/entries/"$hostname".conf
-hddid=$(blkid -o value -s PARTUUID /dev/"$harddisk"2)
-echo -n $hddid >> /boot/loader/entries/"$hostname".conf
-echo " rw" >> /boot/loader/entries/"$hostname".conf
+echo -n "options root=PARTUUID=" >> /boot/loader/entries/'$hostname'.conf
+hddid=$(blkid -o value -s PARTUUID /dev/'$harddisk'2)
+echo -n $hddid >> /boot/loader/entries/'$hostname'.conf
+echo " rw" >> /boot/loader/entries/'$hostname'.conf
 ' >> /mnt/chrootscript.sh
 }
 
