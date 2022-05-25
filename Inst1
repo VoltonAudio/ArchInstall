@@ -876,7 +876,8 @@ then
 " >> install3.sh
 
 else
-echo "fail"
+    echo "fail"
+
 fi
 
 }
