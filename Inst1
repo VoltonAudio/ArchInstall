@@ -447,7 +447,7 @@ script2sethosts(){
 echo '
 echo "127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   '$HOSTNAME' >> /etc/hosts' >> /install2.sh
+127.0.1.1   '$hostname'" >> /etc/hosts' >> /install2.sh
 }
 
 script2settimezone(){
@@ -503,10 +503,10 @@ mkdir /home/$username/Drives/2TB
 mkdir /home/$username/Drives/3TB
 mkdir /home/$username/Drives/256GB
 echo "
-UUID=EE36076636072F61                       /home/volton/Drives/256GB   ntfs   defaults,uid=1000,gid=984                                                                                                0 0
-UUID=06AAF222AAF20DC5                       /home/volton/Drives/1TB     ntfs   defaults                                                                                                0 0
-UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   defaults                                                                                                0 0
-UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
+#UUID=EE36076636072F61                       /home/volton/Drives/256GB   ntfs   defaults,uid=1000,gid=984                                                                                                0 0
+#UUID=06AAF222AAF20DC5                       /home/volton/Drives/1TB     ntfs   defaults                                                                                                0 0
+#UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   defaults                                                                                                0 0
+#UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
 " >> /etc/fstab' >> /install2.sh
 }
 
@@ -615,7 +615,7 @@ echo 'dewm='$dewm >> /install3.sh
 }
 
 script3installs(){
-cat <<'EOF' >> /install2.sh
+cat <<'EOF' >> /install3.sh
 #install yay
 mkdir -p /home/$username/Documents/git/aur
 chown $username:users /home/$username/Documents/git/
@@ -707,7 +707,7 @@ pack=$( cut -f1 -d"." <<< $packurl )
 git clone $aururl /home/$username/Documents/git/aur/$pack
 chown $username:users /home/$username/Documents/git/aur/$pack
 cd /home/$username/Documents/git/aur/$pack && sudo -u $username makepkg -sicr --noconfirm
-cp /home/$username/Drives/1TB/ArchSetup/mednafen.cfg  /home/$username/.mednafen/mednafen.cfg
+#cp /home/$username/Drives/1TB/ArchSetup/mednafen.cfg  /home/$username/.mednafen/mednafen.cfg
 EOF
 }
 
