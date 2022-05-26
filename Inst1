@@ -197,11 +197,11 @@ mkfs.ext4 -F /dev"$harddisk"2
 mkfs.ext4 -F /dev"$harddisk"3
 
 #mount partitions
-mount /dev/"$harddisk"2 /mnt
+mount /dev"$harddisk"2 /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
-mount /dev/"$harddisk"1 /mnt/boot
-mount /dev/"$harddisk"3 /mnt/home
+mount /dev"$harddisk"1 /mnt/boot
+mount /dev"$harddisk"3 /mnt/home
 }
 
 partitionsetnohome(){
@@ -220,9 +220,9 @@ mkfs.fat -F32 /dev"$harddisk"1
 mkfs.ext4 -F /dev"$harddisk"2
 
 #mount partitions
-mount /dev/"$harddisk"2 /mnt
+mount /dev"$harddisk"2 /mnt
 mkdir /mnt/boot
-mount /dev/"$harddisk"1 /mnt/boot
+mount /dev"$harddisk"1 /mnt/boot
 }
 
 kernelinput(){
@@ -371,7 +371,7 @@ initrd /initramfs-'$kernel'.img" > /boot/loader/entries/'$hostname'.conf
 
 #add PARTUUID to arch.conf
 echo -n "options root=PARTUUID=" >> /boot/loader/entries/'$hostname'.conf
-hddid=$(blkid -o value -s PARTUUID /dev/'$harddisk'2)
+hddid=$(blkid -o value -s PARTUUID /dev'$harddisk'2)
 echo -n $hddid >> /boot/loader/entries/'$hostname'.conf
 echo " rw" >> /boot/loader/entries/'$hostname'.conf
 ' >> /mnt/chrootscript.sh
