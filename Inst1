@@ -838,22 +838,36 @@ cp /install3.sh /mnt/install3.sh
 
 autorunscript2(){
 echo '
+cp /etc/profile /mnt/profile
 echo "
 cd /
+su
 chmod +x /install2.sh
-sudo bash install2.sh
+bash install2.sh
 " >> /etc/profile
 ' >> /mnt/chrootscript.sh
 }
 
 autorunscript3(){
 echo '
+cp /mnt/profile /etc/profile
 echo "
 cd /
+su
 chmod +x /install3.sh
-sudo bash install3.sh
+bash install3.sh
 " >> /etc/profile
 ' >> install2.sh
+}
+
+deletescripts(){
+echo "
+cd /
+mv /mnt/profile /etc/profile
+rm chrootscript.sh
+rm install2.sh
+rm install3.sh
+" >> install3.sh
 }
 
 script3enableservices(){
