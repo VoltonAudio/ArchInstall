@@ -805,18 +805,19 @@ SingleClick=false
 
 script3kdedolphin(){
 echo '
-cp /home/$username/Drives/1TB/ArchSetup/user-places.xbel /home/$username/.local/share/' >> /install3.sh
+#cp /home/$username/Drives/1TB/ArchSetup/user-places.xbel /home/$username/.local/share/' >> /install3.sh
 }
 
 script3kdetheme(){
 echo '
+git clone https://github.com/varlesh/numix-kde-theme.git /home/$username/Documents/git/aur/numix-kde-theme
 cd /home/$username/Documents/git/aur/numix-kde-theme && sudo make install' >> /install3.sh
 }
 
 script3sddmtheme(){
 echo '
-git clone https://github.com/3ximus/aerial-sddm-theme.git
-mv aerial-sddm-theme /usr/share/sddm/themes
+git clone https://github.com/3ximus/aerial-sddm-theme.git /home/$username/Documents/git/aerial-sddm-theme
+mv /home/$username/Documents/git/aerial-sddm-theme /usr/share/sddm/themes
 echo "
 [Theme]
 Current=aerial-sddm-theme
@@ -836,10 +837,12 @@ cp /install3.sh /mnt/install3.sh
 }
 
 autorunscript2(){
+echo '
 echo "
 chmod +x /install2.sh
 sudo bash install2.sh
 " >> /etc/profile
+' >> /mnt/chrootscript.sh
 }
 
 autorunscript3(){
@@ -918,6 +921,7 @@ addmultilibrepo
 setbootloader
 setnetwork
 dhcpcddropin
+autorunscript2
 chrootend
 runchroot
 
@@ -948,13 +952,11 @@ script3installs
 script3mouse
 script3dewm #-----------------
 copyscripts
-autorunscript2
 autorunscript3
 script3enableservices
 script2end
 script3end
-
-#syncreboot #use after tested
+syncreboot #use after tested
 
 #fix setbootloaderefistub
 #sudo cp -fr /backup/path /home/$username/.librewolf/*.default-release/places.sqlite
