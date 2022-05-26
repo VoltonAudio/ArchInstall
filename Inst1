@@ -839,6 +839,7 @@ cp /install3.sh /mnt/install3.sh
 autorunscript2(){
 echo '
 echo "
+cd /
 chmod +x /install2.sh
 sudo bash install2.sh
 " >> /etc/profile
