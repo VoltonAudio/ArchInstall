@@ -849,6 +849,7 @@ sudo bash install2.sh
 autorunscript3(){
 echo '
 echo "
+cd /
 chmod +x /install3.sh
 sudo bash install3.sh
 " >> /etc/profile
