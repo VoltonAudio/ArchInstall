@@ -49,7 +49,7 @@ systemplatedefault(){
 systemp="yes"
 booter="systemd-boot"
 dewm="KDE"
-harddisk="/sdd"
+harddisk="sdd"
 homepart="0"
 kernel="linux"
 kernelheaders=$kernel"-headers"
@@ -138,9 +138,9 @@ partitioninput(){
     #select hard disk
     lsblk
     echo -n "Enter Disk Name: /dev"
-    read -i "/sdd" -e harddisk
+    read harddisk
     echo ""
-    echo $harddisk
+    echo $harddisk "selected"
 
     echo "Do You Want A Seperate Home Partition?"
     echo "0.Yes
@@ -175,54 +175,54 @@ fi
 }
 
 partitionsethome(){
-sgdisk --zap-all /dev"$harddisk"
+sgdisk --zap-all /dev/"$harddisk"
 echo "Size in GiB Of Root Partition?"
 read -i "+35" -e homesize
 
-sgdisk -n 0:0:+1024MiB /dev"$harddisk"
-sgdisk -c 1:boot /dev"$harddisk"
-sgdisk -t 1:ef00 /dev"$harddisk"
+sgdisk -n 0:0:+1024MiB /dev/"$harddisk"
+sgdisk -c 1:boot /dev/"$harddisk"
+sgdisk -t 1:ef00 /dev/"$harddisk"
 
-sgdisk -n 0:0:"$homesize"GiB /dev"$harddisk"
-sgdisk -c 2:root /dev"$harddisk"
-sgdisk -t 2:8300 /dev"$harddisk"
+sgdisk -n 0:0:"$homesize"GiB /dev/"$harddisk"
+sgdisk -c 2:root /dev/"$harddisk"
+sgdisk -t 2:8300 /dev/"$harddisk"
 
-sgdisk -n 0:0:0 /dev"$harddisk"
-sgdisk -c 3:home /dev"$harddisk"
-sgdisk -t 3:8300 /dev"$harddisk"
+sgdisk -n 0:0:0 /dev/"$harddisk"
+sgdisk -c 3:home /dev/"$harddisk"
+sgdisk -t 3:8300 /dev/"$harddisk"
 
 #format partitions to correct file system
-mkfs.fat -F32 /dev"$harddisk"1
-mkfs.ext4 -F /dev"$harddisk"2
-mkfs.ext4 -F /dev"$harddisk"3
+mkfs.fat -F32 /dev/"$harddisk"1
+mkfs.ext4 -F /dev/"$harddisk"2
+mkfs.ext4 -F /dev/"$harddisk"3
 
 #mount partitions
-mount /dev"$harddisk"2 /mnt
+mount /dev/"$harddisk"2 /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
-mount /dev"$harddisk"1 /mnt/boot
-mount /dev"$harddisk"3 /mnt/home
+mount /dev/"$harddisk"1 /mnt/boot
+mount /dev/"$harddisk"3 /mnt/home
 }
 
 partitionsetnohome(){
-sgdisk --zap-all /dev"$harddisk"
+sgdisk --zap-all /dev/"$harddisk"
 
-sgdisk -n 0:0:+1024MiB /dev"$harddisk"
-sgdisk -c 1:boot /dev"$harddisk"
-sgdisk -t 1:ef00 /dev"$harddisk"
+sgdisk -n 0:0:+1024MiB /dev/"$harddisk"
+sgdisk -c 1:boot /dev/"$harddisk"
+sgdisk -t 1:ef00 /dev/"$harddisk"
 
-sgdisk -n 0:0:0 /dev"$harddisk"
-sgdisk -c 2:root /dev"$harddisk"
-sgdisk -t 2:8300 /dev"$harddisk"
+sgdisk -n 0:0:0 /dev/"$harddisk"
+sgdisk -c 2:root /dev/"$harddisk"
+sgdisk -t 2:8300 /dev/"$harddisk"
 
 #format partitions to correct file system
-mkfs.fat -F32 /dev"$harddisk"1
-mkfs.ext4 -F /dev"$harddisk"2
+mkfs.fat -F32 /dev/"$harddisk"1
+mkfs.ext4 -F /dev/"$harddisk"2
 
 #mount partitions
-mount /dev"$harddisk"2 /mnt
+mount /dev/"$harddisk"2 /mnt
 mkdir /mnt/boot
-mount /dev"$harddisk"1 /mnt/boot
+mount /dev/"$harddisk"1 /mnt/boot
 }
 
 kernelinput(){
@@ -287,7 +287,7 @@ else
     printf "Please Try Again"
     echo ""
 
-fi
+arddisk
 done
 }
 
@@ -371,7 +371,7 @@ initrd /initramfs-'$kernel'.img" > /boot/loader/entries/'$hostname'.conf
 
 #add PARTUUID to arch.conf
 echo -n "options root=PARTUUID=" >> /boot/loader/entries/'$hostname'.conf
-hddid=$(blkid -o value -s PARTUUID /dev'$harddisk'2)
+hddid=$(blkid -o value -s PARTUUID /dev/'$harddisk'2)
 echo -n $hddid >> /boot/loader/entries/'$hostname'.conf
 echo " rw" >> /boot/loader/entries/'$hostname'.conf
 ' >> /mnt/chrootscript.sh
