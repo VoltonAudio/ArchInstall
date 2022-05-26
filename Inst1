@@ -51,6 +51,7 @@ booter="systemd-boot"
 dewm="KDE"
 harddisk="sdd"
 homepart="0"
+homesize="+35"
 kernel="linux"
 kernelheaders=$kernel"-headers"
 hostname="Arch"
@@ -167,6 +168,8 @@ fi
 createpartition(){
 if [ "$homepart" == 0 ]
 then
+    echo "Size in GiB Of Root Partition?"
+    read -i "+35" -e homesize
     partitionsethome
 elif [ "$homepart" == 1 ]
 then
@@ -176,8 +179,6 @@ fi
 
 partitionsethome(){
 sgdisk --zap-all /dev/"$harddisk"
-echo "Size in GiB Of Root Partition?"
-read -i "+35" -e homesize
 
 sgdisk -n 0:0:+1024MiB /dev/"$harddisk"
 sgdisk -c 1:boot /dev/"$harddisk"
