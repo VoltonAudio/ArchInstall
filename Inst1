@@ -312,7 +312,7 @@ reflector --country 'GB,Ireland,' --latest 20 --connection-timeout 2 --protocol 
 }
 
 installkernel(){
-    pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware amd-ucode sudo nano
+    pacstrap /mnt base base-devel $kernel $kernelheaders linux-firmware amd-ucode sudo nano libxkbcommon libxkbcommon-x11
 }
 
 generatefstab(){
