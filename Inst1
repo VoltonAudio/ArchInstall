@@ -152,6 +152,8 @@ if [ "$homepart" = 0 ]
 then
     homepart="yes"
     echo "Home Partition Selected"
+    echo "Size in GiB Of Root Partition?"
+    read -i "+35" -e homesize
 
 elif [ "$homepart" = 1 ]
 then
@@ -168,8 +170,6 @@ fi
 createpartition(){
 if [ "$homepart" == 0 ]
 then
-    echo "Size in GiB Of Root Partition?"
-    read -i "+35" -e homesize
     partitionsethome
 elif [ "$homepart" == 1 ]
 then
@@ -317,7 +317,7 @@ installkernel(){
 }
 
 generatefstab(){
-    genfstab -U /mnt >> /mnt/etc/fstab
+    genfstab -t PARTUUID /mnt >> /mnt/etc/fstab
 }
 
 addmultilibrepo(){
@@ -336,6 +336,14 @@ echo "#setup dhcpcd + network manager
 pacman -S --noconfirm dhcpcd networkmanager
 systemctl enable dhcpcd@enp3s0.service
 systemctl enable NetworkManager.service" >> /mnt/chrootscript.sh
+}
+
+dhcpcddropin(){
+echo '
+mkdir /etc/systemd/system/dhcpcd@enp3s0.service.d/
+echo "[Service]
+ExecStart=
+ExecStart=/usr/bin/dhcpcd -b -q %I" > /etc/systemd/system/dhcpcd@enp3s0.service.d/no-wait.conf' >> /mnt/chrootscript.sh
 }
 
 setbootloader(){
@@ -511,14 +519,6 @@ echo "
 " >> /etc/fstab' >> /install2.sh
 }
 
-script2dhcpcddropin(){
-echo '
-mkdir /etc/systemd/system/dhcpcd@enp3s0.service.d/
-echo "[Service]
-ExecStart=
-ExecStart=/usr/bin/dhcpcd -b -q %I" > /etc/systemd/system/dhcpcd@enp3s0.service.d/no-wait.conf' >> /install2.sh
-}
-
 script2amdgpu(){
 echo '
 pacman -S --noconfirm mesa mesa-utils lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau' >> /install2.sh
@@ -593,7 +593,7 @@ pacman -S --noconfirm pulseaudio plasma-pa
 
 script2additionalpackages(){
 echo "
-pacman -S --noconfirm konsole dolphin partitionmanager kcalcviewnior ksnip testdisk gnupg git vim code atom blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+ godot mednafen freeplane" >> /install2.sh
+pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip testdisk gnupg git vim code atom blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+ godot mednafen freeplane" >> /install2.sh
 }
 
 script2end(){
@@ -917,6 +917,7 @@ setusername
 addmultilibrepo
 setbootloader
 setnetwork
+dhcpcddropin
 chrootend
 runchroot
 
@@ -933,7 +934,6 @@ script2openssh
 script2ssdtrim
 script2kblayout
 script2editfstab
-script2dhcpcddropin
 script2amdgpu
 script2xorg
 script2dewm
