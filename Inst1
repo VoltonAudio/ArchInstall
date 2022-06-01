@@ -850,7 +850,8 @@ bash install2.sh
 
 autorunscript3(){
 echo '
-cp /mnt/profile /etc/profile
+cd /
+cp profile /etc/profile
 echo "
 cd /
 su
@@ -980,7 +981,3 @@ syncreboot #use after tested
 #xfce4-goodies remove unnecessary packages
 #remove unnecessary gnome packages
 #fix i3-gaps to autostart
-
-#delete 2nd and 3rd script file after use
-#create 2nd script
-# /etc/profile
