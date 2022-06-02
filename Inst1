@@ -903,6 +903,7 @@ fi
 
 createautologin(){
 cat <<'EOF' >> /mnt/chrootscript.sh
+mkdir -p /etc/systemd/system/getty@tty1.service.d/
 echo "[Service]
 ExecStart=
 ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin root - \$TERM
