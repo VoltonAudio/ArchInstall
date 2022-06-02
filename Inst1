@@ -901,8 +901,8 @@ else
 fi
 }
 
-createautologin(){
-cat <<'EOF' >> /mnt/chrootscript.sh
+createautologin1(){
+cat <<'EOF' > /mnt/chrootscript.sh
 mkdir -p /etc/systemd/system/getty@tty1.service.d/
 echo "[Service]
 ExecStart=
@@ -914,6 +914,17 @@ EOF
 #sed -i "s/contents of the file/contents of the file\n\n[Service]\nExecStart=\nExecStart=-\/sbin\/agetty -o '-p -f -- $fill' --noclear --autologin $username - \$TERM/" /home/volton/test.txt
 #sed -i 's/tempo/\\/' /home/volton/test.txt
 #sed -i 's/rary1/\\u/' /home/volton/test.txt
+}
+
+createautologin2(){
+cat <<'EOF' > install2.sh
+mkdir -p /etc/systemd/system/getty@tty1.service.d/
+echo "[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin volton - \$TERM
+" > /etc/systemd/system/getty@tty1.service.d/override.conf
+systemctl enable getty@tty1.service
+EOF
 }
 
 deleteautologin(){
@@ -959,7 +970,7 @@ setbootloader
 setnetwork
 dhcpcddropin
 autorunscript2
-createautologin
+createautologin1
 chrootend
 runchroot
 
@@ -981,6 +992,7 @@ script2xorg
 script2dewm
 script2audio #-----------------
 script2additionalpackages
+createautologin2
 
 #create 3rd script
 script3begin
