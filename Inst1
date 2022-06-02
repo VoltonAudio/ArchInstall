@@ -744,7 +744,6 @@ EndSection
 " >> /install3.sh
 }
 
-
 script3dewm(){
     if [ "$dewm" == "KDE" ]
     then
@@ -838,7 +837,7 @@ cp /install3.sh /mnt/install3.sh
 
 autorunscript2(){
 echo '
-cp /etc/profile /mnt/profile
+cp /etc/profile profile
 echo "
 cd /
 su
@@ -897,10 +896,30 @@ then
 " >> install3.sh
 
 else
-    echo "fail"
+    echo "failed"
 
 fi
+}
 
+createautologin(){
+cat <<'EOF' >> /mnt/chrootscript.sh
+echo "[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin root - \$TERM
+" > /etc/systemd/system/getty@tty1.service.d/override.conf
+systemctl enable getty@tty1.service
+EOF
+#fill="temporary1"
+#sed -i "s/contents of the file/contents of the file\n\n[Service]\nExecStart=\nExecStart=-\/sbin\/agetty -o '-p -f -- $fill' --noclear --autologin $username - \$TERM/" /home/volton/test.txt
+#sed -i 's/tempo/\\/' /home/volton/test.txt
+#sed -i 's/rary1/\\u/' /home/volton/test.txt
+}
+
+deleteautologin(){
+echo "
+rm /etc/systemd/system/getty@tty1.service.d/override.conf
+systemctl disable getty@tty1.service
+" >> /install3.sh
 }
 
 #sequence----------------------------------------------------------
@@ -939,6 +958,7 @@ setbootloader
 setnetwork
 dhcpcddropin
 autorunscript2
+createautologin
 chrootend
 runchroot
 
@@ -971,9 +991,10 @@ script3dewm #-----------------
 copyscripts
 autorunscript3
 script3enableservices
+deleteautologin
 script2end
 script3end
-syncreboot #use after tested
+syncreboot
 
 #fix setbootloaderefistub
 #sudo cp -fr /backup/path /home/$username/.librewolf/*.default-release/places.sqlite
