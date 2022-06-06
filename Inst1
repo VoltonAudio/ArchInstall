@@ -853,7 +853,6 @@ cd /
 cp profile /etc/profile
 echo "
 cd /
-su
 chmod +x /install3.sh
 bash install3.sh
 " >> /etc/profile
@@ -906,7 +905,7 @@ cat <<'EOF' >> /mnt/chrootscript.sh
 mkdir -p /etc/systemd/system/getty@tty1.service.d/
 echo "[Service]
 ExecStart=
-ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin root - \$TERM
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin volton - \$TERM
 " > /etc/systemd/system/getty@tty1.service.d/override.conf
 systemctl enable getty@tty1.service
 EOF
@@ -918,7 +917,6 @@ EOF
 
 createautologin2(){
 cat <<'EOF' >> /mnt/install2.sh
-mkdir -p /etc/systemd/system/getty@tty1.service.d/
 echo "[Service]
 ExecStart=
 ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin volton - \$TERM
@@ -992,7 +990,7 @@ script2xorg
 script2dewm
 script2audio #-----------------
 script2additionalpackages
-createautologin2
+#createautologin2
 
 #create 3rd script
 script3begin
