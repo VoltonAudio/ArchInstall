@@ -598,6 +598,7 @@ pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip test
 
 script2end(){
 echo '
+chmod +x /install3.sh
 sync
 reboot
 ' >> /install2.sh
@@ -927,8 +928,8 @@ EOF
 
 deleteautologin(){
 echo "
-rm /etc/systemd/system/getty@tty1.service.d/override.conf
 systemctl disable getty@tty1.service
+rm /etc/systemd/system/getty@tty1.service.d/override.conf
 " >> /install3.sh
 }
 
@@ -968,7 +969,7 @@ setbootloader
 setnetwork
 dhcpcddropin
 autorunscript2
-createautologin1
+#createautologin1
 chrootend
 runchroot
 
@@ -990,7 +991,7 @@ script2xorg
 script2dewm
 script2audio #-----------------
 script2additionalpackages
-createautologin2
+#createautologin2
 
 #create 3rd script
 script3begin
@@ -1001,7 +1002,7 @@ script3mouse
 script3dewm #-----------------
 autorunscript3
 script3enableservices
-deleteautologin
+#deleteautologin
 script2end
 script3end
 copyscripts
