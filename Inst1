@@ -917,7 +917,7 @@ EOF
 }
 
 createautologin2(){
-cat <<'EOF' >> install2.sh
+cat <<'EOF' >> /mnt/install2.sh
 mkdir -p /etc/systemd/system/getty@tty1.service.d/
 echo "[Service]
 ExecStart=
