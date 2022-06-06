@@ -600,7 +600,7 @@ script2end(){
 echo '
 chmod +x /install3.sh
 sync
-reboot
+#reboot
 ' >> /install2.sh
 }
 
@@ -968,7 +968,7 @@ addmultilibrepo
 setbootloader
 setnetwork
 dhcpcddropin
-autorunscript2
+#autorunscript2
 #createautologin1
 chrootend
 runchroot
@@ -1000,7 +1000,7 @@ script3installs
 #script3plymouth #-----------------
 script3mouse
 script3dewm #-----------------
-autorunscript3
+#autorunscript3
 script3enableservices
 #deleteautologin
 script2end
