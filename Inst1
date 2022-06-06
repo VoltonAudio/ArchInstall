@@ -509,7 +509,7 @@ echo '
 mkdir /home/$username/Drives
 mkdir /home/$username/Drives/1TB
 mkdir /home/$username/Drives/2TB
-mkdir /home/$username/Drives/3TB
+mkdir /home/$username/Drives/4TB
 mkdir /home/$username/Drives/256GB
 echo "
 #UUID=EE36076636072F61                       /home/volton/Drives/256GB   ntfs   defaults,uid=1000,gid=984                                                                                                0 0
@@ -843,7 +843,7 @@ echo "
 cd /
 su
 chmod +x /install2.sh
-bash install2.sh
+bash /install2.sh
 " >> /etc/profile
 ' >> /mnt/chrootscript.sh
 }
@@ -855,9 +855,9 @@ cp profile /etc/profile
 echo "
 cd /
 chmod +x /install3.sh
-bash install3.sh
+bash /install3.sh
 " >> /etc/profile
-' >> install2.sh
+' >> /install2.sh
 }
 
 deletescripts(){
@@ -865,9 +865,9 @@ echo "
 cd /
 mv /mnt/profile /etc/profile
 rm chrootscript.sh
-rm install2.sh
-rm install3.sh
-" >> install3.sh
+rm /install2.sh
+rm /install3.sh
+" >> /install3.sh
 }
 
 script3enableservices(){
@@ -875,25 +875,25 @@ if [ "$dewm" == "KDE" ]
 then
     echo "
 systemctl enable sddm.service
-" >> install3.sh
+" >> /install3.sh
 
 elif [ "$dewm" == "Xfce" ]
 then
     echo "
 systemctl enable lightdm
-" >> install3.sh
+" >> /install3.sh
 
 elif [ "$dewm" == "Gnome" ]
 then
     echo "
 systemctl enable gdm
-" >> install3.sh
+" >> /install3.sh
 
 elif [ "$dewm" == "i3-gaps" ]
 then
     echo "
 
-" >> install3.sh
+" >> /install3.sh
 
 else
     echo "failed"
