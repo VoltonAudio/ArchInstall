@@ -971,7 +971,7 @@ runchroot
 
 #create 2nd script
 script2begin
-script2rebootcheck
+#script2rebootcheck
 script2passinput
 script2sethosts
 script2settimezone
