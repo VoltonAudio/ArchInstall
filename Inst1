@@ -838,24 +838,20 @@ cp /install3.sh /mnt/install3.sh
 
 autorunscript2(){
 echo '
-cp /etc/profile profile
+cp /etc/profile /profile
 echo "
 cd /
-su
-chmod +x /install2.sh
-bash /install2.sh
+bash install2.sh
 " >> /etc/profile
 ' >> /mnt/chrootscript.sh
 }
 
 autorunscript3(){
 echo '
-cd /
-cp profile /etc/profile
+cp /profile /etc/profile
 echo "
 cd /
-chmod +x /install3.sh
-bash /install3.sh
+sudo bash /install3.sh
 " >> /etc/profile
 ' >> /install2.sh
 }
@@ -968,7 +964,7 @@ addmultilibrepo
 setbootloader
 setnetwork
 dhcpcddropin
-#autorunscript2
+autorunscript2
 createautologin1
 chrootend
 runchroot
@@ -1000,7 +996,7 @@ script3installs
 #script3plymouth #-----------------
 script3mouse
 script3dewm #-----------------
-#autorunscript3
+autorunscript3
 script3enableservices
 deleteautologin
 #deletescripts
