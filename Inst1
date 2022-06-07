@@ -969,7 +969,7 @@ setbootloader
 setnetwork
 dhcpcddropin
 #autorunscript2
-#createautologin1
+createautologin1
 chrootend
 runchroot
 
@@ -991,7 +991,7 @@ script2xorg
 script2dewm
 script2audio #-----------------
 script2additionalpackages
-#createautologin2
+createautologin2
 
 #create 3rd script
 script3begin
@@ -1002,7 +1002,7 @@ script3mouse
 script3dewm #-----------------
 #autorunscript3
 script3enableservices
-#deleteautologin
+deleteautologin
 #deletescripts
 script2end
 script3end
