@@ -600,7 +600,7 @@ script2end(){
 echo '
 chmod +x /install3.sh
 sync
-#reboot
+reboot
 ' >> /install2.sh
 }
 
@@ -1015,3 +1015,5 @@ syncreboot
 #xfce4-goodies remove unnecessary packages
 #remove unnecessary gnome packages
 #fix i3-gaps to autostart
+
+#complete fstab
