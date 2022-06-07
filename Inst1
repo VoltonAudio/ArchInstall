@@ -1003,6 +1003,7 @@ script3dewm #-----------------
 #autorunscript3
 script3enableservices
 #deleteautologin
+#deletescripts
 script2end
 script3end
 copyscripts
