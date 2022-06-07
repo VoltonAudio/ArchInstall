@@ -49,7 +49,6 @@ systemplatedefault(){
 systemp="yes"
 booter="systemd-boot"
 dewm="KDE"
-harddisk="sdd"
 homepart="0"
 homesize="+35"
 kernel="linux"
@@ -133,6 +132,16 @@ alluserinput(){
 templateuserinput(){
     usernameinput
     getpassword
+    selectdisk
+}
+
+selectdisk(){
+    #select hard disk
+    lsblk
+    echo -n "Enter Disk Name: /dev"
+    read harddisk
+    echo ""
+    echo $harddisk "selected"
 }
 
 partitioninput(){
@@ -510,12 +519,12 @@ mkdir /home/$username/Drives
 mkdir /home/$username/Drives/1TB
 mkdir /home/$username/Drives/2TB
 mkdir /home/$username/Drives/4TB
-mkdir /home/$username/Drives/256GB
+#mkdir /home/$username/Drives/256GB
 echo "
 #UUID=EE36076636072F61                       /home/volton/Drives/256GB   ntfs   defaults,uid=1000,gid=984                                                                                                0 0
-#UUID=06AAF222AAF20DC5                       /home/volton/Drives/1TB     ntfs   defaults                                                                                                0 0
-#UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   defaults                                                                                                0 0
-#UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
+UUID=06AAF222AAF20DC5                       /home/volton/Drives/1TB     ntfs   defaults                                                                                                0 0
+UUID=4670361717E3B507                       /home/volton/Drives/2TB     ntfs   defaults                                                                                                0 0
+UUID=4EFE5B6BFE5B4A7B                       /home/volton/Drives/4TB     ntfs   defaults                                                                                                0 0
 " >> /etc/fstab' >> /install2.sh
 }
 
@@ -1011,5 +1020,3 @@ syncreboot
 #xfce4-goodies remove unnecessary packages
 #remove unnecessary gnome packages
 #fix i3-gaps to autostart
-
-#complete fstab
