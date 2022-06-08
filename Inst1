@@ -138,7 +138,7 @@ templateuserinput(){
 selectdisk(){
     #select hard disk
     lsblk
-    echo -n "Enter Disk Name: /dev"
+    echo -n "Enter Disk Name: /dev/"
     read harddisk
     echo ""
     echo $harddisk "selected"
@@ -147,7 +147,7 @@ selectdisk(){
 partitioninput(){
     #select hard disk
     lsblk
-    echo -n "Enter Disk Name: /dev"
+    echo -n "Enter Disk Name: /dev/"
     read harddisk
     echo ""
     echo $harddisk "selected"
