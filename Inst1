@@ -441,6 +441,7 @@ script2begin(){
 cat <<'EOF' > /install2.sh
 #! /bin/bash
 
+wait 5s
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
@@ -617,7 +618,8 @@ reboot
 
 script3begin(){
 echo '
-#! /bin/bash' > /install3.sh
+#! /bin/bash
+wait 5s' > /install3.sh
 }
 
 script3passinput(){
