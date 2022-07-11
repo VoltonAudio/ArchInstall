@@ -489,7 +489,8 @@ localectl set-locale LANG=en_IE.UTF-8" >> /install2.sh
 
 script2firewall(){
 echo '
-yes|pacman -S --noconfirm iptables-nft
+pacman -R --noconfirm iptables
+pacman -S --noconfirm iptables-nft
 systemctl enable iptables-nft.service
 systemctl start iptables-nft.service
 pacman -S --noconfirm firewalld
