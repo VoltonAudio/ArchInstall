@@ -495,8 +495,7 @@ systemctl enable iptables.service
 systemctl start iptables.service
 pacman -S --noconfirm firewalld
 systemctl enable firewalld.service
-systemctl start firewalld.service
-PAUSE' >> /install2.sh
+systemctl start firewalld.service' >> /install2.sh
 }
 
 script2openssh(){
