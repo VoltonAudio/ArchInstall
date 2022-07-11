@@ -830,10 +830,22 @@ script3sddmtheme(){
 echo '
 git clone https://github.com/3ximus/aerial-sddm-theme.git /home/$username/Documents/git/aerial-sddm-theme
 mv /home/$username/Documents/git/aerial-sddm-theme /usr/share/sddm/themes
-echo "
+echo "[Autologin]
+Relogin=false
+Session=
+User=
+
+[General]
+HaltCommand=/usr/bin/systemctl poweroff
+RebootCommand=/usr/bin/systemctl reboot
+
 [Theme]
 Current=aerial-sddm-theme
-" >> /etc/sddm.conf.d/kde_settings.conf' >> /install3.sh
+
+[Users]
+MaximumUid=60513
+MinimumUid=1000
+" > /etc/sddm.conf.d/kde_settings.conf' >> /install3.sh
 }
 
 script3end(){
