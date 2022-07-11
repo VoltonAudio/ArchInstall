@@ -314,11 +314,11 @@ sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers" >>
 }
 
 rankmirrors(){
-    cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
-pacman -Sy --noconfirm
-pacman -S --noconfirm pacman-contrib
-rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-#reflector --country 'GB' --latest 20 --connection-timeout 2 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+#cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
+#pacman -Sy --noconfirm
+#pacman -S --noconfirm pacman-contrib
+#rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+reflector --country 'GB' --latest 20 --connection-timeout 2 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 }
 
 installkernel(){
