@@ -447,7 +447,6 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 #check for install errors
 systemctl --failed
-PAUSE
 EOF
 }
 
