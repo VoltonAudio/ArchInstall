@@ -848,6 +848,13 @@ MinimumUid=1000
 " > /etc/sddm.conf.d/kde_settings.conf' >> /install3.sh
 }
 
+script3qemuinstall(){
+echo '
+pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq
+ enable and start libvirtd.service and its logging component virtlogd.socket
+' >> /install3.sh
+}
+
 script3end(){
 echo '
 sync
