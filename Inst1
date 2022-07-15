@@ -850,8 +850,16 @@ MinimumUid=1000
 
 script3qemuinstall(){
 echo '
+dmesg | grep -i -e DMAR -e IOMMU
 pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq
- enable and start libvirtd.service and its logging component virtlogd.socket
+
+systemctl enable libvirtd.service
+systemctl start libvirtd.service
+systemctl enable virtlogd.socket
+systemctl start virtlogd.socket
+
+virsh net-autostart default
+virsh net-start default
 ' >> /install3.sh
 }
 
