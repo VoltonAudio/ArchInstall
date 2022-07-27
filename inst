@@ -907,9 +907,7 @@ echo "efi-framebuffer.0" > /sys/bus/platform/drivers/efi-framebuffer/bind
 modprobe amdgpu
 modprobe snd_hda_intel
 
-sleep 3
-
-' > /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+sleep 3' > /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 script3hookdewmrevert
@@ -922,24 +920,21 @@ script3hookdewmstart(){
 if [ "$dewm" == "KDE" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl stop sddm.service
-    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+echo "systemctl stop sddm.service
+" >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
 
 elif [ "$dewm" == "Xfce" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl stop lightdm
+echo "systemctl stop lightdm
 " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
 
 elif [ "$dewm" == "Gnome" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl stop gdm
+echo "systemctl stop gdm
 killall gdm-x-session
 " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
@@ -954,24 +949,21 @@ script3hookdewmrevert(){
 if [ "$dewm" == "KDE" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl start sddm.service
+echo "systemctl start sddm.service
 " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 elif [ "$dewm" == "Xfce" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl start lightdm
+echo "systemctl start lightdm
 " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 elif [ "$dewm" == "Gnome" ]
 then
     cat <<'EOF' >> /install3.sh
-echo "
-systemctl start gdm
+echo "systemctl start gdm
 " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
