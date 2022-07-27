@@ -571,7 +571,7 @@ pacman -S --noconfirm pulseaudio plasma-pa
 
 script2additionalpackages(){
 echo "
-pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip testdisk gnupg git vim kate code blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+ godot mednafen freeplane ark reflector curl wget tree" >> /install2.sh
+pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip testdisk gnupg git vim kate code blender neofetch man-db qbittorrent firefox vlc bash-completion beets steam nicotine+ godot mednafen freeplane ark reflector curl wget tree" >> /install2.sh
 }
 
 script2end(){
