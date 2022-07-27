@@ -784,7 +784,8 @@ Current=aerial-sddm-theme
 [Users]
 MaximumUid=60513
 MinimumUid=1000
-" > /etc/sddm.conf.d/kde_settings.conf' >> /install3.sh
+" > /etc/sddm.conf.d/kde_settings.conf
+' >> /install3.sh
 }
 
 script3vmsetup(){
@@ -798,7 +799,6 @@ script3vmsetup(){
 
 script3iommugroups(){
 cat <<'EOF' >> /install3.sh
-echo "
 dmesg | grep -i -e DMAR -e IOMMU
 echo '' > /iommugroups.txt
 
@@ -923,26 +923,26 @@ script3hookdewmstart(){
 if [ "$dewm" == "KDE" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl stop sddm.service
+echo "
+systemctl stop sddm.service
     " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
 
 elif [ "$dewm" == "Xfce" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl stop lightdm
-    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+echo "
+systemctl stop lightdm
+" >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
 
 elif [ "$dewm" == "Gnome" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl stop gdm
-    killall gdm-x-session
-    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+echo "
+systemctl stop gdm
+killall gdm-x-session
+" >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 EOF
 
 else
@@ -955,25 +955,25 @@ script3hookdewmrevert(){
 if [ "$dewm" == "KDE" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl start sddm.service
-    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+echo "
+systemctl start sddm.service
+" >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 elif [ "$dewm" == "Xfce" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl start lightdm
-    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+echo "
+systemctl start lightdm
+" >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 elif [ "$dewm" == "Gnome" ]
 then
     cat <<'EOF' >> /install3.sh
-    echo "
-    systemctl start gdm
-    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+echo "
+systemctl start gdm
+" >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
 EOF
 
 else
