@@ -884,8 +884,7 @@ EOF
 
 script3hookscriptrevert(){
 cat <<'EOF' >> /install3.sh
-echo '
-set -x
+echo 'set -x
 
 source "/etc/libvirt/hooks/kvm.conf"
 
