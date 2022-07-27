@@ -54,13 +54,11 @@ homesize="+35"
 kernel="linux"
 kernelheaders=$kernel"-headers"
 hostname="Arch"
-
 }
 
 bootloaderoptions(){
     echo "0.Systemd-boot
-1.GRUB
-2.EFISTUB"
+1.GRUB"
     echo -n "Select A Bootloader: "
     read booter
 if [ "$booter" = 0 ]
@@ -73,10 +71,6 @@ then
     booter="GRUB"
     echo "GRUB Selected"
 
-elif [ "$booter" = 2 ]
-then
-    booter="EFISTUB"
-    echo "EFISTUB Selected"
 else
     echo ""
     echo "Number Not In Range, Select Again"
@@ -87,8 +81,7 @@ fi
 dewmoptions(){
     echo "0.KDE
 1.Xfce
-2.Gnome
-3.i3-gaps"
+2.Gnome"
     echo -n "Select a DE/WM template: "
     read dewmvar
 
@@ -106,11 +99,6 @@ dewmoptions(){
     then
         echo "Gnome Selected"
         dewm="Gnome"
-
-    elif [ "$dewmvar" == 3 ]
-    then
-        echo "i3-gaps Selected"
-        dewm="i3-gaps"
 
     else
         echo ""
@@ -364,9 +352,6 @@ elif [ "$booter" = "GRUB" ]
 then
     setbootloadergrub
 
-elif [ "$booter" = "EFISTUB" ]
-then
-    setbootloaderefistub
 fi
 }
 
@@ -385,7 +370,8 @@ editor no" > /boot/loader/loader.conf
 echo "title '$hostname'
 linux /vmlinuz-'$kernel'
 initrd /amd-ucode.img
-initrd /initramfs-'$kernel'.img" > /boot/loader/entries/'$hostname'.conf
+initrd /initramfs-'$kernel'.img
+options amd_iommu=on iommu=pt iommu=1 video=efifb:off" > /boot/loader/entries/'$hostname'.conf
 
 #add PARTUUID to arch.conf
 echo -n "options root=PARTUUID=" >> /boot/loader/entries/'$hostname'.conf
@@ -400,16 +386,9 @@ echo '#install bootloader
 pacman -Syu --noconfirm
 pacman -S grub efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB --recheck
+sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="/&amd_iommu=on iommu=pt iommu=1 video=efifb:off /' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 ' >> /mnt/chrootscript.sh
-}
-
-setbootloaderefistub(){
-echo "not currently setup"
-setbootloadersystemdboot
-#echo '#install bootloader
-#pacman -Syu --noconfirm
-#' >> /mnt/chrootscript.sh
 }
 
 chrootbegin(){
@@ -489,8 +468,6 @@ localectl set-locale LANG=en_IE.UTF-8" >> /install2.sh
 
 script2firewall(){
 echo '
-#pacman -R --noconfirm iptables
-#pacman -S --noconfirm iptables-nft
 systemctl enable iptables.service
 systemctl start iptables.service
 pacman -S --noconfirm firewalld
@@ -553,10 +530,6 @@ script2dewm(){
     then
         script2gnome
 
-    elif [ "$dewm" == "i3-gaps" ]
-    then
-        script2i3gaps
-
     else
         echo ""
         echo "Number Not In Range, Select Again"
@@ -590,12 +563,6 @@ pacman -S --noconfirm gdm
 pacman -S --noconfirm gnome gnome-tweaks" >> /install2.sh
 }
 
-script2i3gaps(){
-echo "
-pacman -S --noconfirm i3-gaps
-" >> /install2.sh
-}
-
 script2audio(){
 echo '
 pacman -S --noconfirm pulseaudio plasma-pa
@@ -604,7 +571,7 @@ pacman -S --noconfirm pulseaudio plasma-pa
 
 script2additionalpackages(){
 echo "
-pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip testdisk gnupg git vim kate code blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+ godot mednafen freeplane" >> /install2.sh
+pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip testdisk gnupg git vim kate code blender neofetch man-db qbittorrent vlc bash-completion beets steam nicotine+ godot mednafen freeplane ark reflector curl wget tree" >> /install2.sh
 }
 
 script2end(){
@@ -725,24 +692,6 @@ cd /home/$username/Documents/git/aur/$pack && sudo -u $username makepkg -sicr --
 EOF
 }
 
-script3plymouth(){
-echo '
-#install plymouth
-git clone https://aur.archlinux.org/plymouth.git /home/$username/Documents/git/aur/plymouth
-chown $username:users /home/$username/Documents/git/aur/plymouth
-cd /home/$username/Documents/git/aur/plymouth && sudo -u $username makepkg -sicr --noconfirm
-
-#add plymouth hook
-sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev plymouth autodetect modconf block filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
-mkinitcpio -p $kernel
-
-#edit arch.conf
-sed -i "s/rw/rw quiet splash vt.global_cursor_default=0/g" /boot/loader/#entries/"$hostname".conf
-
-#set plymouth theme
-plymouth-set-default-theme -R spinfinity' >> /install2.sh
-}
-
 script3mouse(){
 echo "
 echo 'Section \"InputClass\"
@@ -770,10 +719,6 @@ script3dewm(){
     then
         script3gnome
 
-    elif [ "$dewm" == "i3-gaps" ]
-    then
-        script3i3gaps
-
     else
         echo ""
         echo "Number Not In Range, Select Again"
@@ -796,12 +741,6 @@ echo "
 }
 
 script3gnome(){
-echo "
-
-" >> /install3.sh
-}
-
-script3i3gaps(){
 echo "
 
 " >> /install3.sh
@@ -848,23 +787,215 @@ MinimumUid=1000
 " > /etc/sddm.conf.d/kde_settings.conf' >> /install3.sh
 }
 
+script3vmsetup(){
+    script3iommugroups
+    script3qemuinstall
+    script3hookmanager
+    script3hookscriptstart
+    script3hookscriptrevert
+    script3editlibvirt
+}
+
+script3iommugroups(){
+cat <<'EOF' >> /install3.sh
+echo "
+dmesg | grep -i -e DMAR -e IOMMU
+echo '' > /iommugroups.txt
+
+shopt -s nullglob
+for g in $(find /sys/kernel/iommu_groups/* -maxdepth 0 -type d | sort -V); do
+    echo "IOMMU Group ${g##*/}:" >> /iommugroups.txt
+    for d in $g/devices/*; do
+        echo -e "\t$(lspci -nns ${d##*/})" >> /iommugroups.txt
+    done;
+done;
+
+grep -F "Navi 24" /iommugroups.txt > /iommugpu.txt
+grep -F "Navi 21" /iommugroups.txt >> /iommugpu.txt
+sed 's/	//g' /iommugpu.txt > /iommugpu2.txt
+cut -c-7 /iommugpu2.txt > /iommugpu.txt
+
+mapfile -t pcivirsh </iommugpu.txt
+echo 'VIRSH_GPU_VIDEO=pci_0000_'${pcivirsh[0]}'
+VIRSH_GPU_AUDIO=pci_0000_'${pcivirsh[0]} > /etc/libvirt/hooks/kvm.conf
+EOF
+}
+
 script3qemuinstall(){
 echo '
-dmesg | grep -i -e DMAR -e IOMMU
 pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq
-
 systemctl enable libvirtd.service
 systemctl start libvirtd.service
 systemctl enable virtlogd.socket
 systemctl start virtlogd.socket
-
 virsh net-autostart default
 virsh net-start default
 ' >> /install3.sh
 }
 
+script3hookmanager(){
+echo "
+mkdir -p /etc/libvirt/hooks
+
+wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' \
+     -O /etc/libvirt/hooks/qemu
+chmod +x /etc/libvirt/hooks/qemu
+
+sudo systemctl restart libvirtd.service
+mkdir -p /etc/libvirt/hooks/qemu.d/win10
+mkdir -p /etc/libvirt/hooks/qemu.d/win10/prepare/begin
+mkdir -p /etc/libvirt/hooks/qemu.d/win10/release/end
+" >> /install3.sh
+}
+
+script3hookscriptstart(){
+cat <<'EOF' >> /install3.sh
+echo 'set -x
+
+source "/etc/libvirt/hooks/kvm.conf"
+' > /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+EOF
+
+script3hookdewmstart
+
+cat <<'EOF' >> /install3.sh
+echo 'echo 0 > /sys/class/vtconsole/vtcon0/bind
+echo 0 > /sys/class/vtconsole/vtcon1/bind
+
+echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-buffer/unbind
+
+sleep 5
+
+modprobe -r amdgpu
+modprobe -r snd_hda_intel
+
+virsh nodedev-detach $VIRSH_GPU_VIDEO
+virsh nodedev-detach $VIRSH_GPU_AUDIO
+
+sleep 5
+
+modprobe vfio
+modprobe vfio_pci
+modprobe vfio_iommu_type1
+' >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+EOF
+}
+
+script3hookscriptrevert(){
+cat <<'EOF' >> /install3.sh
+echo '
+set -x
+
+source "/etc/libvirt/hooks/kvm.conf"
+
+modprobe -r vfio
+modprobe -r vfio_pci
+modprobe -r vfio_iommu_type1
+
+sleep 3
+
+virsh nodedev-reattach $VIRSH_GPU_VIDEO
+virsh nodedev-reattach $VIRSH_GPU_AUDIO
+
+echo 1 > /sys/class/vtconsole/vtcon0/bind
+echo 1 > /sys/class/vtconsole/vtcon1/bind
+
+sleep 3
+
+echo "efi-framebuffer.0" > /sys/bus/platform/drivers/efi-framebuffer/bind
+
+modprobe amdgpu
+modprobe snd_hda_intel
+
+sleep 3
+
+' > /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+EOF
+
+script3hookdewmrevert
+cat <<'EOF' >> /install3.sh
+chmod +x /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+EOF
+}
+
+script3hookdewmstart(){
+if [ "$dewm" == "KDE" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl stop sddm.service
+    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+EOF
+
+elif [ "$dewm" == "Xfce" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl stop lightdm
+    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+EOF
+
+elif [ "$dewm" == "Gnome" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl stop gdm
+    killall gdm-x-session
+    " >> /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+EOF
+
+else
+    echo "failed"
+
+fi
+}
+
+script3hookdewmrevert(){
+if [ "$dewm" == "KDE" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl start sddm.service
+    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+EOF
+
+elif [ "$dewm" == "Xfce" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl start lightdm
+    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+EOF
+
+elif [ "$dewm" == "Gnome" ]
+then
+    cat <<'EOF' >> /install3.sh
+    echo "
+    systemctl start gdm
+    " >> /etc/libvirt/hooks/qemu.d/win10/release/end/revert.sh
+EOF
+
+else
+    echo "failed"
+
+fi
+}
+
+script3editlibvirt(){
+    cat <<'EOF' >> /install3.sh
+sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/' /etc/libvirt/libvirtd.conf
+sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/' /etc/libvirt/libvirtd.conf
+echo '
+log_filters="1:qemu"
+log_outputs="1:file:/var/log/libvirt/libvirtd.log"
+' >> /etc/libvirt/libvirtd.conf
+EOF
+}
+
 script3end(){
 echo '
+pacman -Syu --noconfirm
 sync
 reboot
 ' >> /install3.sh
@@ -922,12 +1053,6 @@ elif [ "$dewm" == "Gnome" ]
 then
     echo "
 systemctl enable gdm
-" >> /install3.sh
-
-elif [ "$dewm" == "i3-gaps" ]
-then
-    echo "
-
 " >> /install3.sh
 
 else
@@ -1032,9 +1157,9 @@ createautologin2
 script3begin
 script3passinput
 script3installs
-#script3plymouth #-----------------
 script3mouse
 script3dewm #-----------------
+script3vmsetup
 autorunscript3
 script3enableservices
 deleteautologin
@@ -1044,12 +1169,8 @@ script3end
 copyscripts
 syncreboot
 
-#fix setbootloaderefistub
+
 #sudo cp -fr /backup/path /home/$username/.librewolf/*.default-release/places.sqlite
 #xorg-apps has extra xorg packages eg. gamma control
 #xfce4-goodies remove unnecessary packages
 #remove unnecessary gnome packages
-#fix i3-gaps to autostart
-
-
-#add pacman -Syu to end before final reboot
