@@ -841,7 +841,7 @@ wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvir
      -O /etc/libvirt/hooks/qemu
 chmod +x /etc/libvirt/hooks/qemu
 
-sudo systemctl restart libvirtd.service
+systemctl restart libvirtd.service
 mkdir -p /etc/libvirt/hooks/qemu.d/win10
 mkdir -p /etc/libvirt/hooks/qemu.d/win10/prepare/begin
 mkdir -p /etc/libvirt/hooks/qemu.d/win10/release/end
