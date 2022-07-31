@@ -385,7 +385,7 @@ echo " rw" >> /boot/loader/entries/'$hostname'.conf
 setbootloadergrub(){
 echo '#install bootloader
 pacman -Syu --noconfirm
-pacman -S grub efibootmgr
+pacman -S --noconfirm grub efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 ' >> /mnt/chrootscript.sh
@@ -823,7 +823,7 @@ EOF
 
 script3qemuinstall(){
 echo '
-pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq vde2 bridge-utils
+pacman -S --noconfirm qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq vde2 bridge-utils
 systemctl enable libvirtd.service
 systemctl start libvirtd.service
 systemctl enable virtlogd.socket
