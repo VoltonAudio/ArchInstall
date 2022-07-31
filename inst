@@ -1018,6 +1018,7 @@ echo '
 cp /profile /etc/profile
 echo "
 cd /
+chmod +x /install3.sh
 sudo bash /install3.sh
 " >> /etc/profile
 ' >> /install2.sh
