@@ -823,7 +823,7 @@ EOF
 
 script3qemuinstall(){
 echo '
-pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq
+pacman -S qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq vde2 iptables-nft nftables bridge-utils
 systemctl enable libvirtd.service
 systemctl start libvirtd.service
 systemctl enable virtlogd.socket
