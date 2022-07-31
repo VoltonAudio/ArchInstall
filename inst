@@ -576,7 +576,6 @@ pacman -S --noconfirm konsole dolphin partitionmanager kcalc viewnior ksnip test
 
 script2end(){
 echo '
-chmod +x /install3.sh
 sync
 reboot
 ' >> /install2.sh
@@ -824,18 +823,18 @@ EOF
 script3qemuinstall(){
 echo '
 pacman -S --noconfirm qemu-desktop libvirt edk2-ovmf virt-manager dnsmasq vde2 bridge-utils
-sudo systemctl enable libvirtd.service
-sudo systemctl start libvirtd.service
-sudo systemctl enable virtlogd.socket
-sudo systemctl start virtlogd.socket
+systemctl enable libvirtd.service
+systemctl start libvirtd.service
+systemctl enable virtlogd.socket
+systemctl start virtlogd.socket
 virsh net-autostart default
 virsh net-start default
 usermod -a -G libvirt '$username'
-sudo systemctl start libvirtd
-sudo systemctl enable libvirtd
+systemctl start libvirtd
+systemctl enable libvirtd
 sed -i "s/#user = \"libvirt-qemu\"/user = \"$username\"/g" /etc/libvirt/qemu.conf
 sed -i "s/#group = \"libvirt-qemu\"/group = \"$username\"/g" /etc/libvirt/qemu.conf
-sudo systemctl restart libvirtd
+systemctl restart libvirtd
 ' >> /install3.sh
 }
 
