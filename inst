@@ -830,7 +830,9 @@ systemctl enable virtlogd.socket
 systemctl start virtlogd.socket
 virsh net-autostart default
 virsh net-start default
-sudo usermod -a -G libvirt '$username
+sudo usermod -a -G libvirt '$username'
+sudo systemctl start libvirtd
+sudo systemctl enable libvirtd
 ' >> /install3.sh
 }
 
